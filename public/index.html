@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daratech Bot — Session Generator</title>
+  <meta name="description" content="Generate your WhatsApp SESSION_ID for Daratech Bot in seconds." />
+  <!-- QR renderer (CDN, no install needed) -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #00e676;
+      --green-dim: #00c65e;
+      --green-glow: #00e67630;
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --surface2: #1c1c1c;
+      --border: #262626;
+      --text: #f0f0f0;
+      --muted: #777;
+      --red: #ff5252;
+      --amber: #ffab40;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Header ── */
+    header {
+      width: 100%;
+      padding: 16px 28px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface);
+    }
+
+    .logo-ring {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--green), #00bfa5);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    header h2 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    header h2 span { color: var(--green); }
+
+    /* ── Views ── */
+    .view { display: none; width: 100%; }
+    .view.active { display: flex; flex-direction: column; align-items: center; }
+
+    /* ── Main wrapper ── */
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 540px;
+      padding: 48px 20px 64px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero-icon {
+      width: 76px; height: 76px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00e67618 0%, #00bfa518 100%);
+      border: 2px solid #00e67638;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      font-size: clamp(22px, 5vw, 30px);
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+
+    h1 .accent { color: var(--green); }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+      line-height: 1.65;
+      margin-bottom: 40px;
+      max-width: 380px;
+    }
+
+    /* ── Method choice cards ── */
+    .method-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .method-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      padding: 28px 20px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      text-align: center;
+      user-select: none;
+    }
+
+    .method-card:hover {
+      border-color: var(--green);
+      background: var(--surface2);
+      transform: translateY(-2px);
+    }
+
+    .method-card:active { transform: scale(0.97); }
+
+    .method-icon {
+      width: 62px; height: 62px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      background: #00e67614;
+      border: 1.5px solid #00e67630;
+    }
+
+    .method-title {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.1px;
+    }
+
+    .method-desc {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .method-badge {
+      font-size: 10.5px;
+      font-weight: 700;
+      background: #00e67618;
+      border: 1px solid #00e67630;
+      color: var(--green);
+      border-radius: 20px;
+      padding: 3px 10px;
+      letter-spacing: 0.4px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px 24px;
+      width: 100%;
+    }
+
+    .step-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.3px;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+
+    .step-title {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+
+    /* ── Input ── */
+    .input-wrap { position: relative; }
+
+    .flag {
+      position: absolute;
+      left: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      pointer-events: none;
+    }
+
+    input[type="tel"] {
+      width: 100%;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 16px;
+      padding: 13px 14px 13px 46px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="tel"]:focus { border-color: var(--green); }
+    input[type="tel"]::placeholder { color: var(--muted); }
+
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 7px;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      margin-top: 18px;
+      width: 100%;
+      background: var(--green);
+      color: #000;
+      font-weight: 800;
+      font-size: 15px;
+      border: none;
+      border-radius: 10px;
+      padding: 14px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s, opacity 0.2s;
+      letter-spacing: 0.2px;
+    }
+
+    .btn:hover:not(:disabled) { background: var(--green-dim); }
+    .btn:active:not(:disabled) { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-ghost {
+      margin-top: 14px;
+      width: 100%;
+      background: transparent;
+      color: var(--green);
+      font-weight: 700;
+      font-size: 14px;
+      border: 1.5px solid #00e67640;
+      border-radius: 10px;
+      padding: 12px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      letter-spacing: 0.2px;
+    }
+
+    .btn-ghost:hover { background: #00e67610; border-color: var(--green); }
+
+    .btn-download {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 13px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.2s, transform 0.1s;
+      text-decoration: none;
+    }
+
+    .btn-download:active { transform: scale(0.98); }
+
+    .btn-encoded {
+      background: var(--green);
+      color: #000;
+    }
+
+    .btn-decoded {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-decoded:hover { border-color: var(--green); }
+
+    .download-row {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    /* ── Status ── */
+    .status-box {
+      display: none;
+      margin-top: 14px;
+      padding: 13px 15px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      line-height: 1.5;
+      border: 1px solid;
+    }
+
+    .status-box.loading {
+      background: #00e67610; border-color: #00e67640; color: var(--green); display: block;
+    }
+
+    .status-box.success {
+      background: #00e67610; border-color: #00e67640; color: var(--green); display: block;
+    }
+
+    .status-box.error {
+      background: #ff525210; border-color: #ff525240; color: var(--red); display: block;
+    }
+
+    /* ── Spinner ── */
+    .spinner {
+      display: inline-block;
+      width: 13px; height: 13px;
+      border: 2px solid #00e67640;
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Pairing Code Display ── */
+    .code-display {
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+      text-align: center;
+    }
+
+    .pairing-code {
+      font-size: 38px;
+      font-weight: 900;
+      letter-spacing: 10px;
+      color: var(--green);
+      font-family: 'Courier New', monospace;
+      user-select: all;
+    }
+
+    .code-note {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 10px;
+      line-height: 1.55;
+    }
+
+    /* ── QR code canvas ── */
+    .qr-wrap {
+      background: #fff;
+      border-radius: 14px;
+      padding: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    #qrCanvas { display: block; }
+
+    .qr-placeholder {
+      width: 200px; height: 200px;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .qr-center {
+      display: flex;
+      justify-content: center;
+      margin: 10px 0 16px;
+    }
+
+    /* ── Steps list ── */
+    .steps-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .steps-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 13.5px;
+      color: #ccc;
+      line-height: 1.55;
+    }
+
+    .step-num {
+      min-width: 24px; height: 24px;
+      border-radius: 50%;
+      background: #00e67614;
+      border: 1px solid #00e67635;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ── Waiting pill ── */
+    .waiting-pill {
+      margin-top: 18px;
+      padding: 12px 14px;
+      background: #00e67610;
+      border: 1px solid #00e67630;
+      border-radius: 10px;
+      font-size: 13.5px;
+      color: var(--green);
+    }
+
+    /* ── Success view ── */
+    .success-icon {
+      font-size: 50px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .session-note {
+      font-size: 13.5px;
+      color: #ccc;
+      line-height: 1.65;
+    }
+
+    .session-note strong { color: var(--text); }
+
+    .warning-box {
+      margin-top: 16px;
+      background: #ff526210;
+      border: 1px solid #ff526230;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--amber);
+      line-height: 1.5;
+    }
+
+    .download-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-top: 22px;
+      margin-bottom: 2px;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 20px 0;
+      color: var(--muted);
+      font-size: 11.5px;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Footer ── */
+    footer {
+      width: 100%;
+      text-align: center;
+      padding: 20px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    footer a { color: var(--green); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── Responsive ── */
+    @media (max-width: 420px) {
+      .method-grid { grid-template-columns: 1fr; }
+      .pairing-code { font-size: 30px; letter-spacing: 7px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-ring">🤖</div>
+    <h2>DARATECH <span>BOT</span></h2>
+  </header>
+
+  <!-- ══════════════════════════════════════════
+       VIEW: LANDING — choose method
+  ══════════════════════════════════════════ -->
+  <div class="view active" id="view-landing">
+    <main>
+      <div class="hero-icon">🔐</div>
+      <h1>Session ID <span class="accent">Generator</span></h1>
+      <p class="subtitle">
+        Choose how you'd like to link your WhatsApp to Daratech Bot.
+        Both methods are quick and secure.
+      </p>
+
+      <div class="method-grid">
+        <!-- QR Code -->
+        <div class="method-card" onclick="goQR()">
+          <div class="method-icon">📷</div>
+          <div class="method-title">QR Code</div>
+          <div class="method-desc">Scan a QR code with your phone camera inside WhatsApp</div>
+          <div class="method-badge">Classic</div>
+        </div>
+
+        <!-- Pair Code -->
+        <div class="method-card" onclick="goPair()">
+          <div class="method-icon">🔢</div>
+          <div class="method-title">Pair Code</div>
+          <div class="method-desc">Enter an 8-digit code on your phone. No camera needed</div>
+          <div class="method-badge">No Camera</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       VIEW: QR CODE FLOW
+  ══════════════════════════════════════════ -->
+  <div class="view" id="view-qr">
+    <main>
+
+      <!-- QR Step 1: Generate -->
+      <div class="card" id="qr-step1">
+        <div class="step-label">QR Code · Step 1 of 2</div>
+        <div class="step-title">Generate a QR Code</div>
+
+        <p style="font-size:13.5px; color:#ccc; line-height:1.6; margin-bottom:18px;">
+          Click the button below to generate a live QR code. Open WhatsApp on your
+          phone and scan it to link your account.
+        </p>
+
+        <button class="btn" id="qrStartBtn" onclick="startQR()">
+          Generate QR Code
+        </button>
+
+        <div class="status-box" id="qrStatusBox"></div>
+
+        <button class="btn-ghost" style="margin-top:14px" onclick="goLanding()">← Back</button>
+      </div>
+
+      <!-- QR Step 2: Scan -->
+      <div class="card" id="qr-step2" style="display:none;">
+        <div class="step-label">QR Code · Step 2 of 2</div>
+        <div class="step-title">Scan with WhatsApp</div>
+
+        <div class="qr-center">
+          <div class="qr-wrap" id="qrWrap">
+            <div class="qr-placeholder" id="qrPlaceholder">
+              <span class="spinner" style="width:28px;height:28px;border-width:3px;margin:0;"></span>
+              <span>Loading QR…</span>
+            </div>
+            <canvas id="qrCanvas" style="display:none;"></canvas>
+          </div>
+        </div>
+
+        <p style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:16px;">
+          QR refreshes automatically · expires in ~60 s
+        </p>
+
+        <ul class="steps-list">
+          <li><span class="step-num">1</span>Open WhatsApp on your phone</li>
+          <li><span class="step-num">2</span>Go to <strong>Settings → Linked Devices → Link a Device</strong></li>
+          <li><span class="step-num">3</span>Point your camera at the QR code above</li>
+          <li><span class="step-num">4</span>Your session file will be ready to download automatically ✅</li>
+        </ul>
+
+        <div class="waiting-pill">
+          <span class="spinner"></span>
+          Waiting for you to scan…
+        </div>
+
+        <button class="btn-ghost" onclick="resetQR()">← Start Over</button>
+      </div>
+
+      <!-- QR Done -->
+      <div class="card" id="qr-step3" style="display:none;">
+        <div class="success-icon">🎉</div>
+        <div class="step-label">Done!</div>
+        <div class="step-title">Session Created Successfully</div>
+
+        <p class="session-note">
+          Your session has been created. <strong>Download your session file</strong> below —
+          both formats are provided for easy use.
+          The session ID was also sent to your own WhatsApp chat.
+        </p>
+
+        <div class="download-label">Download Session File</div>
+        <div class="download-row">
+          <button class="btn-download btn-encoded" id="qrDlEncoded" onclick="downloadSession('qr','encoded')">
+            ⬇ Encoded (Base64) — paste as SESSION_ID
+          </button>
+          <button class="btn-download btn-decoded" id="qrDlDecoded" onclick="downloadSession('qr','decoded')">
+            ⬇ Decoded (JSON) — raw credentials
+          </button>
+        </div>
+
+        <div class="warning-box">
+          ⚠️ <strong>Never share your session file with anyone.</strong>
+          It gives full access to your WhatsApp account.
+        </div>
+
+        <button class="btn" onclick="goLanding()" style="margin-top:20px">
+          Generate Another Session
+        </button>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       VIEW: PAIR CODE FLOW
+  ══════════════════════════════════════════ -->
+  <div class="view" id="view-pair">
+    <main>
+
+      <!-- Pair Step 1: Enter number -->
+      <div class="card" id="pair-step1">
+        <div class="step-label">Pair Code · Step 1 of 3</div>
+        <div class="step-title">Enter Your WhatsApp Number</div>
+
+        <div class="input-wrap">
+          <span class="flag">📱</span>
+          <input
+            type="tel"
+            id="phoneInput"
+            placeholder="e.g. 2348152077346"
+            autocomplete="tel"
+            inputmode="numeric"
+          />
+        </div>
+        <p class="hint">Include your country code. No + or spaces. Example: 2348152077346</p>
+
+        <button class="btn" id="getCodeBtn" onclick="getCode()">
+          Generate Pairing Code
+        </button>
+
+        <div class="status-box" id="pairStatusBox"></div>
+
+        <button class="btn-ghost" onclick="goLanding()">← Back</button>
+      </div>
+
+      <!-- Pair Step 2: Enter code in WhatsApp -->
+      <div class="card" id="pair-step2" style="display:none;">
+        <div class="step-label">Pair Code · Step 2 of 3</div>
+        <div class="step-title">Enter This Code in WhatsApp</div>
+
+        <div class="code-display">
+          <div class="pairing-code" id="codeDisplay">----</div>
+          <p class="code-note">This code expires in about 60 seconds.<br/>Enter it exactly as shown.</p>
+        </div>
+
+        <ul class="steps-list" style="margin-top:20px;">
+          <li><span class="step-num">1</span>Open WhatsApp on your phone</li>
+          <li><span class="step-num">2</span>Go to <strong>Settings → Linked Devices → Link a Device</strong></li>
+          <li><span class="step-num">3</span>Tap <strong>"Link with phone number instead"</strong></li>
+          <li><span class="step-num">4</span>Enter the 8-digit code shown above</li>
+          <li><span class="step-num">5</span>Your session file will be ready to download automatically ✅</li>
+        </ul>
+
+        <div class="waiting-pill">
+          <span class="spinner"></span>
+          Waiting for you to link the device…
+        </div>
+
+        <button class="btn-ghost" onclick="resetPair()">← Start Over</button>
+      </div>
+
+      <!-- Pair Step 3: Done -->
+      <div class="card" id="pair-step3" style="display:none;">
+        <div class="success-icon">🎉</div>
+        <div class="step-label">Pair Code · Step 3 of 3 — Done!</div>
+        <div class="step-title">Session Created Successfully</div>
+
+        <p class="session-note">
+          Your session has been created. <strong>Download your session file</strong> below —
+          both formats are provided for easy use.
+          The session ID was also sent to your own WhatsApp chat.
+        </p>
+
+        <div class="download-label">Download Session File</div>
+        <div class="download-row">
+          <button class="btn-download btn-encoded" id="pairDlEncoded" onclick="downloadSession('pair','encoded')">
+            ⬇ Encoded (Base64) — paste as SESSION_ID
+          </button>
+          <button class="btn-download btn-decoded" id="pairDlDecoded" onclick="downloadSession('pair','decoded')">
+            ⬇ Decoded (JSON) — raw credentials
+          </button>
+        </div>
+
+        <div class="warning-box">
+          ⚠️ <strong>Never share your session file with anyone.</strong>
+          It gives full access to your WhatsApp account.
+        </div>
+
+        <button class="btn" onclick="goLanding()" style="margin-top:20px">
+          Generate Another Session
+        </button>
+      </div>
+
+    </main>
+  </div>
+
+  <footer>
+    Made by <a href="https://github.com/adtelecominfo-png" target="_blank">Daratech</a>
+    &nbsp;·&nbsp;
+    <a href="https://github.com/adtelecominfo-png/DaraTech-Bot-V1" target="_blank">Bot GitHub</a>
+  </footer>
+
+  <script>
+    // ── State ──────────────────────────────────────────────────
+    let qrSessionKey = null;
+    let qrPollTimer = null;
+    let pairSessionKey = null;
+    let pairPollTimer = null;
+
+    // ── View routing ───────────────────────────────────────────
+    function showView(id) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    function goLanding() {
+      stopQRPoll();
+      stopPairPoll();
+      qrSessionKey = null;
+      pairSessionKey = null;
+      showView('view-landing');
+    }
+
+    function goQR() {
+      resetQRCards();
+      showView('view-qr');
+    }
+
+    function goPair() {
+      resetPairCards();
+      showView('view-pair');
+    }
+
+    // ── QR flow ────────────────────────────────────────────────
+    function resetQRCards() {
+      showQRCard('qr-step1');
+      setStatus('qrStatusBox', '', '');
+      document.getElementById('qrStartBtn').disabled = false;
+      document.getElementById('qrStartBtn').textContent = 'Generate QR Code';
+    }
+
+    function showQRCard(id) {
+      ['qr-step1','qr-step2','qr-step3'].forEach(c => {
+        document.getElementById(c).style.display = c === id ? 'block' : 'none';
+      });
+    }
+
+    function resetQR() {
+      stopQRPoll();
+      qrSessionKey = null;
+      resetQRCards();
+    }
+
+    async function startQR() {
+      const btn = document.getElementById('qrStartBtn');
+      btn.disabled = true;
+      btn.textContent = 'Starting…';
+      setStatus('qrStatusBox', 'Connecting to WhatsApp servers…', 'loading');
+
+      try {
+        const res = await fetch('/qr/start', { method: 'POST' });
+        const data = await res.json();
+
+        if (!data.sessionKey) {
+          setStatus('qrStatusBox', '❌ Failed to start QR session. Try again.', 'error');
+          btn.disabled = false;
+          btn.textContent = 'Generate QR Code';
+          return;
+        }
+
+        qrSessionKey = data.sessionKey;
+        showQRCard('qr-step2');
+        startQRPoll();
+      } catch (err) {
+        setStatus('qrStatusBox', `❌ Network error: ${err.message}`, 'error');
+        btn.disabled = false;
+        btn.textContent = 'Generate QR Code';
+      }
+    }
+
+    function startQRPoll() {
+      stopQRPoll();
+      qrPollTimer = setInterval(pollQR, 2000);
+      pollQR(); // immediate first check
+    }
+
+    function stopQRPoll() {
+      if (qrPollTimer) { clearInterval(qrPollTimer); qrPollTimer = null; }
+    }
+
+    async function pollQR() {
+      if (!qrSessionKey) return stopQRPoll();
+      try {
+        const res = await fetch(`/qr/poll/${qrSessionKey}`);
+        const data = await res.json();
+
+        if (data.status === 'qr') {
+          renderQR(data.qr);
+        } else if (data.status === 'connected') {
+          // Connected — waiting for session to be built
+          showQRLoading('Connected! Building session…');
+        } else if (data.status === 'done') {
+          stopQRPoll();
+          // Store key for download
+          showQRCard('qr-step3');
+        } else if (data.status === 'expired') {
+          stopQRPoll();
+          resetQR();
+          setStatus('qrStatusBox', '⏰ Session expired. Please start again.', 'error');
+        } else if (data.status === 'error') {
+          stopQRPoll();
+          resetQR();
+          setStatus('qrStatusBox', `❌ ${data.message || 'An error occurred.'}`, 'error');
+        }
+      } catch (_) {}
+    }
+
+    function renderQR(qrString) {
+      const canvas = document.getElementById('qrCanvas');
+      const placeholder = document.getElementById('qrPlaceholder');
+
+      QRCode.toCanvas(canvas, qrString, {
+        width: 220,
+        margin: 1,
+        color: { dark: '#000000', light: '#ffffff' }
+      }, (err) => {
+        if (!err) {
+          placeholder.style.display = 'none';
+          canvas.style.display = 'block';
+        }
+      });
+    }
+
+    function showQRLoading(msg) {
+      const placeholder = document.getElementById('qrPlaceholder');
+      const canvas = document.getElementById('qrCanvas');
+      canvas.style.display = 'none';
+      placeholder.style.display = 'flex';
+      placeholder.innerHTML = `<span class="spinner" style="width:28px;height:28px;border-width:3px;margin:0;"></span><span>${msg}</span>`;
+    }
+
+    // ── Pair flow ──────────────────────────────────────────────
+    function resetPairCards() {
+      showPairCard('pair-step1');
+      document.getElementById('phoneInput').value = '';
+      document.getElementById('getCodeBtn').disabled = false;
+      document.getElementById('getCodeBtn').textContent = 'Generate Pairing Code';
+      setStatus('pairStatusBox', '', '');
+    }
+
+    function showPairCard(id) {
+      ['pair-step1','pair-step2','pair-step3'].forEach(c => {
+        document.getElementById(c).style.display = c === id ? 'block' : 'none';
+      });
+    }
+
+    function resetPair() {
+      stopPairPoll();
+      pairSessionKey = null;
+      resetPairCards();
+    }
+
+    async function getCode() {
+      const number = document.getElementById('phoneInput').value.trim().replace(/\D/g, '');
+
+      if (!number || number.length < 7) {
+        setStatus('pairStatusBox', '❌ Please enter a valid number with country code (e.g. 2348152077346).', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('getCodeBtn');
+      btn.disabled = true;
+      btn.textContent = 'Generating…';
+      setStatus('pairStatusBox', 'Connecting to WhatsApp servers…', 'loading');
+
+      try {
+        const res = await fetch(`/code?number=${encodeURIComponent(number)}`);
+        const data = await res.json();
+
+        if (data.code) {
+          const raw = data.code.replace(/\s/g, '');
+          const formatted = raw.length === 8 ? raw.slice(0,4) + ' ' + raw.slice(4) : raw;
+
+          document.getElementById('codeDisplay').textContent = formatted;
+          pairSessionKey = data.sessionKey;
+          showPairCard('pair-step2');
+          setStatus('pairStatusBox', '', '');
+          startPairPoll();
+        } else {
+          setStatus('pairStatusBox', `❌ ${data.error || 'Could not generate code. Try again.'}`, 'error');
+          btn.disabled = false;
+          btn.textContent = 'Generate Pairing Code';
+        }
+      } catch (err) {
+        setStatus('pairStatusBox', `❌ Network error: ${err.message}`, 'error');
+        btn.disabled = false;
+        btn.textContent = 'Generate Pairing Code';
+      }
+    }
+
+    function startPairPoll() {
+      stopPairPoll();
+      pairPollTimer = setInterval(pollPair, 3000);
+    }
+
+    function stopPairPoll() {
+      if (pairPollTimer) { clearInterval(pairPollTimer); pairPollTimer = null; }
+    }
+
+    async function pollPair() {
+      if (!pairSessionKey) return stopPairPoll();
+      try {
+        const res = await fetch(`/code/poll/${pairSessionKey}`);
+        const data = await res.json();
+
+        if (data.done) {
+          stopPairPoll();
+          showPairCard('pair-step3');
+        } else if (data.expired) {
+          stopPairPoll();
+        }
+      } catch (_) {}
+    }
+
+    // ── Download ───────────────────────────────────────────────
+    function downloadSession(flow, type) {
+      const key = flow === 'qr' ? qrSessionKey : pairSessionKey;
+      if (!key) return;
+      const a = document.createElement('a');
+      a.href = `/download/${key}?type=${type}`;
+      a.download = '';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    // ── Helpers ────────────────────────────────────────────────
+    function setStatus(boxId, msg, type) {
+      const box = document.getElementById(boxId);
+      if (!type) { box.className = 'status-box'; box.style.display = 'none'; return; }
+      box.className = `status-box ${type}`;
+      box.innerHTML = type === 'loading'
+        ? `<span class="spinner"></span>${msg}`
+        : msg;
+      box.style.display = 'block';
+    }
+
+    // ── Input cleanup ──────────────────────────────────────────
+    document.getElementById('phoneInput').addEventListener('input', e => {
+      e.target.value = e.target.value.replace(/[^\d]/g, '');
+    });
+
+    document.getElementById('phoneInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') getCode();
+    });
+
+    // Boot into landing
+    showView('view-landing');
+  </script>
+
+</body>
+</html>
