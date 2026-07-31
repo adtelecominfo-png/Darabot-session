@@ -95,8 +95,18 @@ async function startQRSession(key, tempDir) {
     const { connection, lastDisconnect, qr } = update;
 
     if (qr) {
-      // Store the raw QR string — frontend renders it with qrcode.js
-      qrStore.set(key, { status: 'qr', qr, message: null });
+      // Coerce QR payload to a trimmed string to ensure frontend always receives a clean value.
+      // Sometimes the library may emit a Buffer or include whitespace/newlines.
+      let qrStr = null;
+      try {
+        if (typeof qr === 'string') qrStr = qr.trim();
+        else if (qr && typeof qr.toString === 'function') qrStr = qr.toString().trim();
+        else qrStr = String(qr).trim();
+      } catch (_) {
+        qrStr = null;
+      }
+
+      qrStore.set(key, { status: 'qr', qr: qrStr, message: null });
     }
 
     if (connection === 'open') {
