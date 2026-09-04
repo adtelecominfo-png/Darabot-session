@@ -13,9 +13,18 @@ const {
   makeCacheableSignalKeyStore
 } = require('@whiskeysockets/baileys');
 
+// optional server-side QR->PNG generator (best-effort)
+let qrcodeLib = null;
+try {
+  qrcodeLib = require('qrcode'); // installs: npm i qrcode
+} catch (err) {
+  // not installed — we will still return the raw qr string
+  qrcodeLib = null;
+}
+
 const router = express.Router();
 
-// In-memory QR state: key → { qr, status, message }
+// In-memory QR state: key → { qr, qrDataUrl?, status, message }
 const qrStore = new Map();
 const QR_TTL_MS = 5 * 60 * 1000;
 
@@ -31,7 +40,7 @@ router.post('/start', async (req, res) => {
   const key = makeid(10);
   const tempDir = path.join(__dirname, 'temp', key);
 
-  qrStore.set(key, { status: 'pending', qr: null, message: null });
+  qrStore.set(key, { status: 'pending', qr: null, qrDataUrl: null, message: null });
 
   // Auto-expire
   setTimeout(() => {
@@ -60,10 +69,11 @@ router.get('/poll/:key', (req, res) => {
       status: 'done',
       encoded: sess ? sess.encoded : null,
       decoded: sess ? sess.decoded : null
-    });
+n    });
   }
 
-  res.json(entry);
+  // Return full entry including qrDataUrl when available
+  return res.json(entry);
 });
 
 async function startQRSession(key, tempDir) {
@@ -106,13 +116,25 @@ async function startQRSession(key, tempDir) {
         qrStr = null;
       }
 
-      qrStore.set(key, { status: 'qr', qr: qrStr, message: null });
+      // Attempt to generate a PNG Data URL for easier frontend rendering.
+      // This is optional — if `qrcode` isn't installed we still return the raw qr string.
+      if (qrStr && qrcodeLib) {
+        try {
+          const dataUrl = await qrcodeLib.toDataURL(qrStr, { width: 300, margin: 1 });
+          qrStore.set(key, { status: 'qr', qr: qrStr, qrDataUrl: dataUrl, message: null });
+        } catch (err) {
+          // fallback to raw string only
+          qrStore.set(key, { status: 'qr', qr: qrStr, qrDataUrl: null, message: null });
+        }
+      } else {
+        qrStore.set(key, { status: 'qr', qr: qrStr, qrDataUrl: null, message: null });
+      }
     }
 
     if (connection === 'open') {
       if (sessionDone) return;
       sessionDone = true;
-      qrStore.set(key, { status: 'connected', qr: null, message: null });
+      qrStore.set(key, { status: 'connected', qr: null, qrDataUrl: null, message: null });
 
       await delay(4000);
 
@@ -126,7 +148,7 @@ async function startQRSession(key, tempDir) {
         sessions.set(key, encoded, decoded);
 
         // Mark done
-        qrStore.set(key, { status: 'done', qr: null, message: null });
+        qrStore.set(key, { status: 'done', qr: null, qrDataUrl: null, message: null });
 
         // Also send via WhatsApp
         await sock.sendMessage(sock.user.id, {
@@ -142,7 +164,7 @@ async function startQRSession(key, tempDir) {
         console.log(`✅ QR session created for ${sock.user.id}`);
       } catch (err) {
         console.error('QR session send error:', err.message);
-        qrStore.set(key, { status: 'error', qr: null, message: 'Session created but send failed.' });
+        qrStore.set(key, { status: 'error', qr: null, qrDataUrl: null, message: 'Session created but send failed.' });
       } finally {
         await delay(1500);
         try { await sock.ws.close(); } catch (_) {}
@@ -159,7 +181,7 @@ async function startQRSession(key, tempDir) {
         // QR expired — let client know they need to restart
         const entry = qrStore.get(key);
         if (entry && entry.status !== 'done') {
-          qrStore.set(key, { status: 'pending', qr: null, message: null });
+          qrStore.set(key, { status: 'pending', qr: null, qrDataUrl: null, message: null });
         }
       }
     }
