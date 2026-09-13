@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const pino = require('pino');
 const sessions = require('./sessions');
+const metrics = require('./metrics');
 const {
   default: makeWASocket,
   useMultiFileAuthState,
@@ -30,6 +31,7 @@ function removeFolder(folderPath) {
 
 // GET /code?number=... — generate pairing code
 router.get('/', async (req, res) => {
+  metrics.increment('pairStarts');
   const id = makeid();
   const sessionKey = makeid(10);
   const tempDir = path.join(__dirname, 'temp', id);
@@ -83,6 +85,7 @@ router.get('/', async (req, res) => {
 
           // Store for polling + download
           sessions.set(sessionKey, encoded, decoded);
+          metrics.increment('sessionsCreated');
           pairStatus.set(sessionKey, { done: true, error: null });
 
           // Send instructions separately from the code so it can be copied cleanly.
@@ -96,6 +99,7 @@ router.get('/', async (req, res) => {
 
           console.log(`✅ Pair session created for ${sock.user.id}`);
         } catch (err) {
+          metrics.increment('errors');
           console.error('Session send error:', err.message);
           pairStatus.set(sessionKey, { done: true, error: err.message });
           try {
@@ -144,6 +148,7 @@ router.get('/', async (req, res) => {
   try {
     await createSocketSession();
   } catch (err) {
+    metrics.increment('errors');
     console.error('Fatal session error:', err.message);
     removeFolder(tempDir);
     pairStatus.delete(sessionKey);

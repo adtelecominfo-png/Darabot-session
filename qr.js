@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const pino = require('pino');
 const sessions = require('./sessions');
+const metrics = require('./metrics');
 const {
   default: makeWASocket,
   useMultiFileAuthState,
@@ -37,6 +38,7 @@ function cleanup(key, tempDir) {
 
 // POST /qr/start — kick off a QR session
 router.post('/start', async (req, res) => {
+  metrics.increment('qrStarts');
   const key = makeid(10);
   const tempDir = path.join(__dirname, 'temp', key);
 
@@ -51,6 +53,7 @@ router.post('/start', async (req, res) => {
 
   // Run connection in background
   startQRSession(key, tempDir).catch((err) => {
+    metrics.increment('errors');
     const entry = qrStore.get(key);
     if (entry) qrStore.set(key, { ...entry, status: 'error', message: err.message });
   });
@@ -146,6 +149,7 @@ async function startQRSession(key, tempDir) {
 
         // Store for download
         sessions.set(key, encoded, decoded);
+        metrics.increment('sessionsCreated');
 
         // Mark done
         qrStore.set(key, { status: 'done', qr: null, qrDataUrl: null, message: null });

@@ -65,3 +65,11 @@ session_generator/
 - `SESSION_ID` generated here is plain base64 — compatible with DARATECH V2's `.env` format
 - Each pairing creates a temp folder under `temp/` that is deleted automatically after the session is created
 - The app does **not** store or log any session data
+
+## Operational endpoints
+
+- `GET /healthz` — lightweight health check for Render or uptime monitors.
+- `GET /status` — public pairing-service status used by the website.
+- `GET /admin/metrics` — protected in-memory metrics when `ADMIN_TOKEN` is configured.
+
+The service also applies security headers, per-IP pairing throttling, automatic cleanup of stale temporary folders, and automatic session expiry.

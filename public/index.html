@@ -68,7 +68,43 @@
     .brand-mark img { width: 100%; height: 100%; object-fit: cover; }
     .brand-name { font-size: 15px; line-height: 1; font-weight: 900; letter-spacing: .14em; }
     .brand-name span { display: block; margin-top: 5px; color: var(--green); font-size: 10px; letter-spacing: .22em; }
+    .top-actions { display: flex; align-items: center; gap: 9px; }
+    .utility-btn, .language-select { border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,.72); color: var(--ink); font-size: 12px; font-weight: 800; padding: 9px 11px; }
+    .utility-btn:hover, .language-select:hover { border-color: var(--green); color: var(--green-dark); }
+    .language-select { cursor: pointer; }
     .status-chip { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; font-weight: 700; }
+    body.dark { --ink: #e9f5ee; --muted: #9bb1a5; --paper: #0b1712; --card: rgba(18,35,27,.92); --line: #294438; --mint: #153a2a; --shadow: 0 24px 70px rgba(0,0,0,.25); }
+    body.dark .utility-btn, body.dark .language-select, body.dark .phone-field, body.dark .session-value { background: #10241a; color: var(--ink); }
+    body.dark .qr-stage { background: #10241a; border-color: #35664d; }
+    body.dark .qr-wrap, body.dark .session-box { background: #10241a; }
+    body.dark .session-value { border-color: var(--line); }
+    .content-section { max-width: 850px; margin-top: 58px; }
+    .content-section h2 { font-size: 26px; letter-spacing: -.05em; margin-bottom: 12px; }
+    .content-section > p { color: var(--muted); line-height: 1.65; font-size: 14px; }
+    .guide-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 18px; }
+    .guide-card { padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); }
+    .guide-card b { color: var(--green-dark); display: block; margin-bottom: 7px; }
+    .guide-card p { color: var(--muted); font-size: 13px; line-height: 1.55; }
+    @media (max-width: 680px) { .guide-grid { grid-template-columns: 1fr; } }
+    .faq-list { display: grid; gap: 8px; margin-top: 18px; }
+    .faq-list details { padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+    .faq-list summary { cursor: pointer; font-size: 13px; font-weight: 900; }
+    .faq-list p { color: var(--muted); font-size: 13px; line-height: 1.6; padding-top: 10px; }
+    .timer { display: inline-flex; align-items: center; gap: 6px; margin-top: 15px; color: #9a661a; font-size: 12px; font-weight: 900; }
+    .retry-btn { display: none; margin-top: 14px; border: 0; background: transparent; color: var(--danger); font-size: 13px; font-weight: 900; }
+    .retry-btn.show { display: inline-block; }
+    .install-banner { display: none; align-items: center; justify-content: space-between; gap: 15px; max-width: 850px; margin-top: 20px; padding: 14px 16px; border: 1px solid #b8e8ca; border-radius: 14px; background: var(--mint); color: var(--green-dark); font-size: 13px; font-weight: 800; }
+    .install-banner.show { display: flex; }
+    .install-banner button { border: 0; border-radius: 9px; padding: 9px 12px; background: var(--green-dark); color: white; font-size: 12px; font-weight: 900; }
+    .status-panel { display: none; max-width: 850px; margin-top: 20px; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
+    .status-panel.show { display: block; }
+    .status-panel strong { display: block; margin-bottom: 5px; }
+    .status-panel p { color: var(--muted); font-size: 13px; }
+    .status-panel.ok strong { color: var(--green-dark); }
+    .status-panel.fail strong { color: var(--danger); }
+    .env-copy { margin-top: 10px; }
+    .env-copy .backup-btn { margin-top: 0; }
+    .visibility-btn { float: right; border: 0; background: transparent; color: var(--green-dark); font-size: 11px; font-weight: 900; }
     .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 5px #d8f3e4; }
     .page { width: min(1180px, calc(100% - 44px)); margin: 0 auto; padding: 54px 0 74px; }
     .hero { max-width: 710px; margin-bottom: 44px; }
@@ -163,7 +199,7 @@
         <div class="brand-mark"><img src="/assets/favicon-64.png" alt="" /></div>
         <div class="brand-name">DARATECH<span>SESSION STUDIO</span></div>
       </a>
-      <div class="status-chip"><i class="status-dot"></i> Secure session generator</div>
+      <div class="top-actions"><button class="utility-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle dark mode">☾</button><select class="language-select" id="languageSelect" onchange="setLanguage(this.value)" aria-label="Language"><option value="en">EN</option><option value="fr">FR</option><option value="ha">HA</option></select><button class="utility-btn" onclick="checkStatus()">Status</button><div class="status-chip"><i class="status-dot"></i> Secure session generator</div></div>
     </header>
 
     <main class="page">
@@ -183,13 +219,17 @@
           </button>
         </div>
         <div class="feature-strip"><span><b>✓</b> No session data stored</span><span><b>✓</b> Copy-ready output</span><span><b>✓</b> Works on mobile</span></div>
+        <div class="install-banner" id="installBanner"><span>Install DARATECH V2 for faster access.</span><button onclick="installApp()">Install app</button></div>
+        <div class="status-panel" id="statusPanel"></div>
+        <section class="content-section" id="guide"><h2>How it works</h2><p>Choose a method, connect your WhatsApp, then copy the generated value into your bot environment.</p><div class="guide-grid"><div class="guide-card"><b>1 · Choose</b><p>Use QR for a camera scan or Pair Code when you prefer typing a short code.</p></div><div class="guide-card"><b>2 · Connect</b><p>Follow the WhatsApp prompts while this page keeps your connection active.</p></div><div class="guide-card"><b>3 · Copy</b><p>Copy the session ID and add it to your bot's <strong>SESSION_ID=</strong> variable.</p></div></div></section>
+        <section class="content-section" id="faq"><h2>Common questions</h2><div class="faq-list"><details><summary>Is my session ID stored?</summary><p>No. The in-memory session record expires automatically and is never written to a database.</p></details><details><summary>Which method should I use?</summary><p>QR is fastest when you have access to your phone camera. Pair Code is useful when scanning is inconvenient.</p></details><details><summary>What if the code expires?</summary><p>Start again and generate a fresh QR or Pair Code. Old temporary files are cleaned up automatically.</p></details></div></section>
       </section>
 
       <section class="view" id="view-qr">
         <div class="flow-layout"><div class="flow-head"><button class="back-btn" onclick="goLanding()">← Back</button><span class="flow-label">QR connection</span></div>
           <div class="panel" id="qr-step1"><div class="stepbar"><i class="on"></i><i></i></div><h2>Let's get you connected.</h2><p class="panel-intro">We'll create a live QR code. Open WhatsApp, go to Linked Devices, and scan it with your phone.</p><button class="primary-btn" id="qrStartBtn" onclick="startQR()">Generate QR code&nbsp; →</button><div class="status-box" id="qrStatusBox"></div><button class="ghost-btn" onclick="goLanding()">Choose another method</button></div>
-          <div class="panel" id="qr-step2" style="display:none"><div class="stepbar"><i class="on"></i><i class="on"></i></div><h2>Scan to connect.</h2><p class="panel-intro">Keep this page open while you scan the code in WhatsApp.</p><div class="qr-stage"><div class="qr-wrap"><div class="qr-placeholder" id="qrPlaceholder"><span class="spinner" style="width:28px;height:28px"></span><span>Creating your QR code…</span></div><canvas id="qrCanvas" style="display:none"></canvas></div></div><ul class="instructions"><li><b>1</b>Open WhatsApp and choose <strong>Settings → Linked Devices</strong>.</li><li><b>2</b>Tap <strong>Link a Device</strong>, then scan the QR above.</li></ul><div class="waiting"><span class="spinner"></span>Waiting for your scan…</div><button class="ghost-btn" onclick="resetQR()">Start over</button></div>
-          <div class="panel" id="qr-step3" style="display:none"><div class="success-mark">✓</div><h2>You're all set.</h2><p class="panel-intro">Your session is ready. Copy it below and paste it into your bot's <strong>.env</strong> file.</p><div class="session-box"><div class="session-box-head"><span>SESSION_ID</span><span>Base64</span></div><textarea class="session-value" id="qrSessionValue" readonly placeholder="Preparing…"></textarea><button class="copy-btn" id="qrCopyBtn" onclick="copySession('qr')">Copy SESSION_ID</button><button class="backup-btn" onclick="downloadSession('qr')">Download a backup file</button></div><div class="warning">Never share your session ID. Anyone with this value can access your WhatsApp account.</div><button class="primary-btn" onclick="goLanding()">Create another session&nbsp; →</button></div>
+          <div class="panel" id="qr-step2" style="display:none"><div class="stepbar"><i class="on"></i><i class="on"></i></div><h2>Scan to connect.</h2><p class="panel-intro">Keep this page open while you scan the code in WhatsApp.</p><div class="qr-stage"><div class="qr-wrap"><div class="qr-placeholder" id="qrPlaceholder"><span class="spinner" style="width:28px;height:28px"></span><span>Creating your QR code…</span></div><canvas id="qrCanvas" style="display:none"></canvas></div></div><div class="timer" id="qrTimer">⏱ QR expires in 60s</div><button class="retry-btn" id="qrRetryBtn" onclick="resetQR()">QR expired — generate a new one</button><ul class="instructions"><li><b>1</b>Open WhatsApp and choose <strong>Settings → Linked Devices</strong>.</li><li><b>2</b>Tap <strong>Link a Device</strong>, then scan the QR above.</li></ul><div class="waiting"><span class="spinner"></span>Waiting for your scan…</div><button class="ghost-btn" onclick="resetQR()">Start over</button></div>
+          <div class="panel" id="qr-step3" style="display:none"><div class="success-mark">✓</div><h2>You're all set.</h2><p class="panel-intro">Your session is ready. Copy it below and paste it into your bot's <strong>.env</strong> file.</p><div class="session-box"><div class="session-box-head"><span>SESSION_ID</span><span>Base64 <button class="visibility-btn" onclick="toggleSecret('qrSessionValue', this)">Hide</button></span></div><textarea class="session-value" id="qrSessionValue" readonly placeholder="Preparing…"></textarea><button class="copy-btn" id="qrCopyBtn" onclick="copySession('qr')">Copy SESSION_ID</button><div class="env-copy"><button class="backup-btn" onclick="copyEnv('qr')">Copy SESSION_ID= variable</button></div><button class="backup-btn" onclick="downloadSession('qr')">Download a backup file</button></div><div class="warning">Never share your session ID. Anyone with this value can access your WhatsApp account.</div><button class="primary-btn" onclick="goLanding()">Create another session&nbsp; →</button></div>
         </div>
       </section>
 
@@ -197,7 +237,7 @@
         <div class="flow-layout"><div class="flow-head"><button class="back-btn" onclick="goLanding()">← Back</button><span class="flow-label">Pair code connection</span></div>
           <div class="panel" id="pair-step1"><div class="stepbar"><i class="on"></i><i></i><i></i></div><h2>Enter your number.</h2><p class="panel-intro">Use your full WhatsApp number with country code. Don't include the plus sign or spaces.</p><label class="field-label" for="phoneInput">WhatsApp number</label><div class="phone-field"><span class="phone-prefix">+</span><input type="tel" id="phoneInput" placeholder="234 815 207 7346" autocomplete="tel" inputmode="numeric" /></div><p class="hint">Example: 2348152077346</p><button class="primary-btn" id="getCodeBtn" onclick="getCode()">Get pairing code&nbsp; →</button><div class="status-box" id="pairStatusBox"></div><button class="ghost-btn" onclick="goLanding()">Choose another method</button></div>
           <div class="panel" id="pair-step2" style="display:none"><div class="stepbar"><i class="on"></i><i class="on"></i><i></i></div><h2>Enter this code in WhatsApp.</h2><p class="panel-intro">On your phone, choose Linked Devices → Link with phone number instead.</p><div class="code-display" id="codeDisplay">----</div><ul class="instructions"><li><b>1</b>Open WhatsApp and go to <strong>Settings → Linked Devices</strong>.</li><li><b>2</b>Tap <strong>Link with phone number instead</strong>.</li><li><b>3</b>Enter the code shown above.</li></ul><div class="waiting"><span class="spinner"></span>Waiting for your device…</div><button class="ghost-btn" onclick="resetPair()">Start over</button></div>
-          <div class="panel" id="pair-step3" style="display:none"><div class="success-mark">✓</div><h2>You're all set.</h2><p class="panel-intro">Your session is ready. Copy it below and paste it into your bot's <strong>.env</strong> file.</p><div class="session-box"><div class="session-box-head"><span>SESSION_ID</span><span>Base64</span></div><textarea class="session-value" id="pairSessionValue" readonly placeholder="Preparing…"></textarea><button class="copy-btn" id="pairCopyBtn" onclick="copySession('pair')">Copy SESSION_ID</button><button class="backup-btn" onclick="downloadSession('pair')">Download a backup file</button></div><div class="warning">Never share your session ID. Anyone with this value can access your WhatsApp account.</div><button class="primary-btn" onclick="goLanding()">Create another session&nbsp; →</button></div>
+          <div class="panel" id="pair-step3" style="display:none"><div class="success-mark">✓</div><h2>You're all set.</h2><p class="panel-intro">Your session is ready. Copy it below and paste it into your bot's <strong>.env</strong> file.</p><div class="session-box"><div class="session-box-head"><span>SESSION_ID</span><span>Base64 <button class="visibility-btn" onclick="toggleSecret('pairSessionValue', this)">Hide</button></span></div><textarea class="session-value" id="pairSessionValue" readonly placeholder="Preparing…"></textarea><button class="copy-btn" id="pairCopyBtn" onclick="copySession('pair')">Copy SESSION_ID</button><div class="env-copy"><button class="backup-btn" onclick="copyEnv('pair')">Copy SESSION_ID= variable</button></div><button class="backup-btn" onclick="downloadSession('pair')">Download a backup file</button></div><div class="warning">Never share your session ID. Anyone with this value can access your WhatsApp account.</div><button class="primary-btn" onclick="goLanding()">Create another session&nbsp; →</button></div>
         </div>
       </section>
     </main>
@@ -205,22 +245,27 @@
   </div>
 
   <script>
-    let qrSessionKey = null, qrPollTimer = null, qrEncoded = '';
+    let qrSessionKey = null, qrPollTimer = null, qrEncoded = '', qrSeconds = 60, qrTimer = null;
     let pairSessionKey = null, pairPollTimer = null, pairEncoded = '';
+    let deferredInstallPrompt = null;
+    const translations = { en: { hero: 'WhatsApp connection made simple', copy: 'Generate a secure DARATECH V2 session ID in seconds. Choose the connection method that works best for you.' }, fr: { hero: 'Connexion WhatsApp simplifiée', copy: 'Générez votre identifiant de session DARATECH V2 en quelques secondes.' }, ha: { hero: 'Haɗin WhatsApp cikin sauƙi', copy: 'Ƙirƙiri session ID na DARATECH V2 cikin daƙiƙu.' } };
     function showView(id) { document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-    function goLanding() { stopQRPoll(); stopPairPoll(); qrSessionKey = null; qrEncoded = ''; pairSessionKey = null; pairEncoded = ''; showView('view-landing'); }
+    function goLanding() { stopQRPoll(); stopPairPoll(); stopQRCountdown(); qrSessionKey = null; qrEncoded = ''; pairSessionKey = null; pairEncoded = ''; showView('view-landing'); }
     function goQR() { resetQRCards(); showView('view-qr'); }
     function goPair() { resetPairCards(); showView('view-pair'); }
     function showQRCard(id) { ['qr-step1','qr-step2','qr-step3'].forEach(c => document.getElementById(c).style.display = c === id ? 'block' : 'none'); }
     function showPairCard(id) { ['pair-step1','pair-step2','pair-step3'].forEach(c => document.getElementById(c).style.display = c === id ? 'block' : 'none'); }
     function resetQRCards() { showQRCard('qr-step1'); setStatus('qrStatusBox','', ''); const b = document.getElementById('qrStartBtn'); b.disabled = false; b.textContent = 'Generate QR code  →'; }
-    function resetQR() { stopQRPoll(); qrSessionKey = null; qrEncoded = ''; resetQRCards(); }
-    async function startQR() { const b = document.getElementById('qrStartBtn'); b.disabled = true; b.textContent = 'Connecting…'; setStatus('qrStatusBox','Connecting to WhatsApp servers…','loading'); try { const r = await fetch('/qr/start',{method:'POST'}), d = await r.json(); if (!d.sessionKey) throw new Error('Could not start QR session.'); qrSessionKey = d.sessionKey; showQRCard('qr-step2'); startQRPoll(); } catch(e) { setStatus('qrStatusBox','Could not connect. Please try again.','error'); b.disabled = false; b.textContent = 'Generate QR code  →'; } }
+    function resetQR() { stopQRPoll(); stopQRCountdown(); qrSessionKey = null; qrEncoded = ''; resetQRCards(); document.getElementById('qrRetryBtn').classList.remove('show'); }
+    async function startQR() { const b = document.getElementById('qrStartBtn'); document.getElementById('qrRetryBtn').classList.remove('show'); b.disabled = true; b.textContent = 'Connecting…'; setStatus('qrStatusBox','Connecting to WhatsApp servers…','loading'); try { const r = await fetch('/qr/start',{method:'POST'}), d = await r.json(); if (!d.sessionKey) throw new Error('Could not start QR session.'); qrSessionKey = d.sessionKey; showQRCard('qr-step2'); startQRCountdown(); startQRPoll(); } catch(e) { setStatus('qrStatusBox','Could not connect. Please try again.','error'); b.disabled = false; b.textContent = 'Generate QR code  →'; } }
     function startQRPoll() { stopQRPoll(); qrPollTimer = setInterval(pollQR,2000); pollQR(); }
     function stopQRPoll() { if (qrPollTimer) { clearInterval(qrPollTimer); qrPollTimer = null; } }
-    async function pollQR() { if (!qrSessionKey) return stopQRPoll(); try { const d = await (await fetch('/qr/poll/'+qrSessionKey)).json(); if (d.status === 'qr') renderQR(d.qr,d.qrDataUrl); else if (d.status === 'connected') showQRLoading('Connected. Building your session…'); else if (d.status === 'done') { stopQRPoll(); qrEncoded = d.encoded || ''; document.getElementById('qrSessionValue').value = qrEncoded; showQRCard('qr-step3'); } else if (d.status === 'expired') { stopQRPoll(); resetQR(); setStatus('qrStatusBox','This session expired. Please start again.','error'); } else if (d.status === 'error') { stopQRPoll(); resetQR(); setStatus('qrStatusBox',d.message || 'Something went wrong.','error'); } } catch (_) {} }
+    async function pollQR() { if (!qrSessionKey) return stopQRPoll(); try { const d = await (await fetch('/qr/poll/'+qrSessionKey)).json(); if (d.status === 'qr') renderQR(d.qr,d.qrDataUrl); else if (d.status === 'connected') showQRLoading('Connected. Building your session…'); else if (d.status === 'done') { stopQRPoll(); stopQRCountdown(); qrEncoded = d.encoded || ''; document.getElementById('qrSessionValue').value = qrEncoded; showQRCard('qr-step3'); } else if (d.status === 'expired') { stopQRPoll(); stopQRCountdown(); document.getElementById('qrRetryBtn').classList.add('show'); showQRLoading('QR expired. Generate a new one.'); } else if (d.status === 'error') { stopQRPoll(); stopQRCountdown(); document.getElementById('qrRetryBtn').classList.add('show'); showQRLoading(d.message || 'Something went wrong.'); } } catch (_) {} }
     function renderQR(qrString, dataUrl) { const canvas = document.getElementById('qrCanvas'), placeholder = document.getElementById('qrPlaceholder'); if (dataUrl) { const image = new Image(); image.onload = () => { canvas.width = 220; canvas.height = 220; canvas.getContext('2d').drawImage(image,0,0,220,220); placeholder.style.display='none'; canvas.style.display='block'; }; image.onerror = () => renderQRFromString(qrString,canvas,placeholder); image.src = dataUrl; } else renderQRFromString(qrString,canvas,placeholder); }
     function renderQRFromString(qrString,canvas,placeholder) { if (!qrString || typeof QRCode === 'undefined') return showQRLoading('QR unavailable. Please start over.'); QRCode.toCanvas(canvas,qrString,{width:220,margin:1,color:{dark:'#10251e',light:'#ffffff'}},e => { if (!e) { placeholder.style.display='none'; canvas.style.display='block'; } }); }
+    function startQRCountdown() { stopQRCountdown(); qrSeconds = 60; updateQRCountdown(); qrTimer = setInterval(() => { qrSeconds -= 1; updateQRCountdown(); if (qrSeconds <= 0) { stopQRCountdown(); stopQRPoll(); document.getElementById('qrRetryBtn').classList.add('show'); showQRLoading('Refreshing your QR code…'); setTimeout(() => { if (document.getElementById('qr-step2').style.display !== 'none') { qrSessionKey = null; startQR(); } }, 1200); } }, 1000); }
+    function stopQRCountdown() { if (qrTimer) { clearInterval(qrTimer); qrTimer = null; } }
+    function updateQRCountdown() { const el = document.getElementById('qrTimer'); if (el) el.textContent = qrSeconds > 0 ? '⏱ QR expires in ' + qrSeconds + 's' : '⏱ QR expired'; }
     function showQRLoading(msg) { const p=document.getElementById('qrPlaceholder'), c=document.getElementById('qrCanvas'); c.style.display='none'; p.style.display='flex'; p.innerHTML='<span class="spinner" style="width:28px;height:28px"></span><span>'+msg+'</span>'; }
     function resetPairCards() { showPairCard('pair-step1'); document.getElementById('phoneInput').value=''; const b=document.getElementById('getCodeBtn'); b.disabled=false; b.textContent='Get pairing code  →'; setStatus('pairStatusBox','', ''); }
     function resetPair() { stopPairPoll(); pairSessionKey=null; pairEncoded=''; resetPairCards(); }
@@ -229,10 +274,19 @@
     function stopPairPoll() { if (pairPollTimer) { clearInterval(pairPollTimer); pairPollTimer=null; } }
     async function pollPair() { if (!pairSessionKey) return stopPairPoll(); try { const d=await (await fetch('/code/poll/'+pairSessionKey)).json(); if (d.done) { stopPairPoll(); pairEncoded=d.encoded || ''; document.getElementById('pairSessionValue').value=pairEncoded; showPairCard('pair-step3'); } else if (d.expired) stopPairPoll(); } catch (_) {} }
     async function copySession(flow) { const value=flow==='qr'?qrEncoded:pairEncoded, button=document.getElementById(flow==='qr'?'qrCopyBtn':'pairCopyBtn'); if (!value) return; try { await navigator.clipboard.writeText(value); } catch (_) { const t=document.getElementById(flow==='qr'?'qrSessionValue':'pairSessionValue'); t.focus(); t.select(); document.execCommand('copy'); } button.textContent='Copied ✓'; button.classList.add('copied'); setTimeout(()=>{button.textContent='Copy SESSION_ID';button.classList.remove('copied');},2200); }
+    async function copyEnv(flow) { const value = flow === 'qr' ? qrEncoded : pairEncoded; if (!value) return; const text = 'SESSION_ID=' + value; try { await navigator.clipboard.writeText(text); } catch (_) { const helper = document.createElement('textarea'); helper.value = text; document.body.appendChild(helper); helper.select(); document.execCommand('copy'); helper.remove(); } }
+    function toggleSecret(id, button) { const area = document.getElementById(id); area.dataset.hidden = area.dataset.hidden !== 'true' ? 'true' : 'false'; if (area.dataset.hidden === 'true') { area.dataset.real = area.value; area.value = '•'.repeat(Math.min(area.dataset.real.length, 180)); button.textContent = 'Show'; } else { area.value = area.dataset.real || area.value; button.textContent = 'Hide'; } }
     function downloadSession(flow) { const encoded=flow==='qr'?qrEncoded:pairEncoded; if (!encoded) return; const content='DARATECH V2 — SESSION ID (Encoded / Base64)\n============================================\n\nPaste this value into your .env file:\nSESSION_ID='+encoded+'\n\n⚠ Never share this file with anyone.\n'; const blob=new Blob([content],{type:'text/plain;charset=utf-8'}), a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='daratech-v2-session-'+flow+'.txt'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href); }
     function setStatus(id,msg,type) { const box=document.getElementById(id); if (!type) { box.className='status-box'; box.textContent=''; return; } box.className='status-box '+type; box.innerHTML=type==='loading'?'<span class="spinner"></span>'+msg:msg; }
     document.getElementById('phoneInput').addEventListener('input',e=>e.target.value=e.target.value.replace(/[^\d]/g,''));
     document.getElementById('phoneInput').addEventListener('keydown',e=>{if(e.key==='Enter')getCode();});
+    function toggleTheme() { document.body.classList.toggle('dark'); localStorage.setItem('daratech-theme', document.body.classList.contains('dark') ? 'dark' : 'light'); document.getElementById('themeBtn').textContent = document.body.classList.contains('dark') ? '☀' : '☾'; }
+    function setLanguage(lang) { localStorage.setItem('daratech-language', lang); const t = translations[lang] || translations.en; document.querySelector('.eyebrow').textContent = t.hero; document.querySelector('.hero-copy').textContent = t.copy; }
+    async function checkStatus() { const panel = document.getElementById('statusPanel'); panel.className = 'status-panel show'; panel.innerHTML = '<strong>Checking service…</strong><p>Please wait.</p>'; try { const data = await (await fetch('/status')).json(); panel.className = 'status-panel show ok'; panel.innerHTML = '<strong>✓ Service operational</strong><p>' + data.message + '</p>'; } catch (_) { panel.className = 'status-panel show fail'; panel.innerHTML = '<strong>Service unavailable</strong><p>Try again in a moment.</p>'; } }
+    window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstallPrompt = e; document.getElementById('installBanner').classList.add('show'); });
+    async function installApp() { if (!deferredInstallPrompt) return; deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt = null; document.getElementById('installBanner').classList.remove('show'); }
+    if (localStorage.getItem('daratech-theme') === 'dark') toggleTheme();
+    setLanguage(localStorage.getItem('daratech-language') || 'en');
   </script>
 </body>
 </html>
