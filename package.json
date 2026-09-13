@@ -1,12 +1,13 @@
 {
   "name": "daratech-session-generator",
   "version": "1.0.0",
-  "description": "WhatsApp Session ID Generator for Daratech Bot",
+  "description": "WhatsApp Session ID Generator for DARATECH V2",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
     "start": "node index.js",
-    "dev": "node index.js"
+    "dev": "node index.js",
+    "check": "node --check index.js && node --check qr.js && node --check pair.js"
   },
   "author": "Daratech",
   "license": "ISC",
@@ -15,6 +16,7 @@
     "express": "^4.18.2",
     "pino": "^8.21.0",
     "dotenv": "^16.4.5",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "qrcode": "^1.5.4"
   }
 }

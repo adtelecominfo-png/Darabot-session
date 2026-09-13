@@ -69,7 +69,7 @@ router.get('/poll/:key', (req, res) => {
       status: 'done',
       encoded: sess ? sess.encoded : null,
       decoded: sess ? sess.decoded : null
-n    });
+    });
   }
 
   // Return full entry including qrDataUrl when available
@@ -153,12 +153,12 @@ async function startQRSession(key, tempDir) {
         // Also send via WhatsApp
         await sock.sendMessage(sock.user.id, {
           text:
-            `🤖 *DARATECH BOT — Session ID*\n\n` +
+            `🤖 *DARATECH V2 — Session ID*\n\n` +
             `\`\`\`${encoded}\`\`\`\n\n` +
             `⚠️ *Never share this with anyone.*\n\n` +
             `📋 Copy the code above and paste it as your\n` +
             `SESSION_ID= in your bot's .env file.\n\n` +
-            `_Powered by Daratech Bot_`
+            `_Powered by DARATECH V2_`
         });
 
         console.log(`✅ QR session created for ${sock.user.id}`);

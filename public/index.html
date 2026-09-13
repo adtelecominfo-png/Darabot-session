@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Daratech Bot — Session Generator</title>
-  <meta name="description" content="Generate your WhatsApp SESSION_ID for Daratech Bot in seconds." />
+  <title>DARATECH V2 — Session Generator</title>
+  <meta name="description" content="Generate your WhatsApp SESSION_ID for DARATECH V2 in seconds." />
   <!-- QR renderer (CDN, no install needed) -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <style>
@@ -508,7 +508,7 @@
 
   <header>
     <div class="logo-ring">🤖</div>
-    <h2>DARATECH <span>BOT</span></h2>
+    <h2>DARATECH <span>V2</span></h2>
   </header>
 
   <!-- ══════════════════════════════════════════
@@ -519,7 +519,7 @@
       <div class="hero-icon">🔐</div>
       <h1>Session ID <span class="accent">Generator</span></h1>
       <p class="subtitle">
-        Choose how you'd like to link your WhatsApp to Daratech Bot.
+        Choose how you'd like to link your WhatsApp to DARATECH V2.
         Both methods are quick and secure.
       </p>
 
@@ -832,7 +832,7 @@
         const data = await res.json();
 
         if (data.status === 'qr') {
-          renderQR(data.qr);
+          renderQR(data.qr, data.qrDataUrl);
         } else if (data.status === 'connected') {
           // Connected — waiting for session to be built
           showQRLoading('Connected! Building session…');
@@ -852,9 +852,33 @@
       } catch (_) {}
     }
 
-    function renderQR(qrString) {
+    function renderQR(qrString, qrDataUrl) {
       const canvas = document.getElementById('qrCanvas');
       const placeholder = document.getElementById('qrPlaceholder');
+
+      if (qrDataUrl) {
+        const image = new Image();
+        image.onload = () => {
+          const size = 220;
+          canvas.width = size;
+          canvas.height = size;
+          canvas.getContext('2d').drawImage(image, 0, 0, size, size);
+          placeholder.style.display = 'none';
+          canvas.style.display = 'block';
+        };
+        image.onerror = () => renderQRFromString(qrString, canvas, placeholder);
+        image.src = qrDataUrl;
+        return;
+      }
+
+      renderQRFromString(qrString, canvas, placeholder);
+    }
+
+    function renderQRFromString(qrString, canvas, placeholder) {
+      if (!qrString || typeof QRCode === 'undefined') {
+        showQRLoading('QR unavailable. Please start over.');
+        return;
+      }
 
       QRCode.toCanvas(canvas, qrString, {
         width: 220,

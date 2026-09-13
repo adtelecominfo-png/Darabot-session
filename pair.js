@@ -88,12 +88,12 @@ router.get('/', async (req, res) => {
           // Send session ID to user's own WhatsApp
           await sock.sendMessage(sock.user.id, {
             text:
-              `🤖 *DARATECH BOT — Session ID*\n\n` +
+              `🤖 *DARATECH V2 — Session ID*\n\n` +
               `\`\`\`${encoded}\`\`\`\n\n` +
               `⚠️ *Never share this with anyone.*\n\n` +
               `📋 Copy the code above and paste it as your\n` +
               `SESSION_ID= in your bot's .env file.\n\n` +
-              `_Powered by Daratech Bot_`
+              `_Powered by DARATECH V2_`
           });
 
           console.log(`✅ Pair session created for ${sock.user.id}`);

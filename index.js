@@ -49,7 +49,7 @@ app.get('/download/:key', (req, res) => {
   } else {
     // Encoded base64 — ready to paste as SESSION_ID
     content =
-      `DARATECH BOT — SESSION ID (Encoded / Base64)\n` +
+      `DARATECH V2 — SESSION ID (Encoded / Base64)\n` +
       `============================================\n` +
       `Generated: ${new Date().toUTCString()}\n\n` +
       `Paste this value into your .env file:\n` +
