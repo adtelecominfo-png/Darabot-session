@@ -300,6 +300,43 @@
       margin-top: 18px;
     }
 
+    .session-copy {
+      margin-top: 20px;
+      padding: 16px;
+      border: 1px solid #00e67645;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #00e67612, #00bfa508);
+    }
+
+    .session-copy-label {
+      display: flex;
+      justify-content: space-between;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .session-value {
+      width: 100%;
+      min-height: 94px;
+      resize: vertical;
+      padding: 11px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: #090909;
+      color: #d8ffe8;
+      font: 12px/1.5 'Courier New', monospace;
+      word-break: break-all;
+      outline: none;
+    }
+
+    .session-value:focus { border-color: var(--green); }
+    .btn-copy { margin-top: 10px; background: var(--green); color: #001b0b; }
+    .btn-copy.copied { background: #b8ffd2; }
+
     /* ── Status ── */
     .status-box {
       display: none;
@@ -614,14 +651,13 @@
           The session ID was also sent to your own WhatsApp chat.
         </p>
 
-        <div class="download-label">Download Session File</div>
-        <div class="download-row">
-          <button class="btn-download btn-encoded" id="qrDlEncoded" onclick="downloadSession('qr','encoded')">
-            ⬇ Encoded (Base64) — paste as SESSION_ID
-          </button>
-          <button class="btn-download btn-decoded" id="qrDlDecoded" onclick="downloadSession('qr','decoded')">
-            ⬇ Decoded (JSON) — raw credentials
-          </button>
+        <div class="session-copy">
+          <div class="session-copy-label"><span>Your SESSION_ID</span><span>Base64</span></div>
+          <textarea class="session-value" id="qrSessionValue" readonly placeholder="Preparing your session ID…"></textarea>
+          <button class="btn btn-copy" id="qrCopyBtn" onclick="copySession('qr')">Copy SESSION_ID</button>
+          <div class="download-row">
+            <button class="btn-download btn-decoded" onclick="downloadSession('qr','encoded')">Download backup file</button>
+          </div>
         </div>
 
         <div class="warning-box">
@@ -707,14 +743,13 @@
           The session ID was also sent to your own WhatsApp chat.
         </p>
 
-        <div class="download-label">Download Session File</div>
-        <div class="download-row">
-          <button class="btn-download btn-encoded" id="pairDlEncoded" onclick="downloadSession('pair','encoded')">
-            ⬇ Encoded (Base64) — paste as SESSION_ID
-          </button>
-          <button class="btn-download btn-decoded" id="pairDlDecoded" onclick="downloadSession('pair','decoded')">
-            ⬇ Decoded (JSON) — raw credentials
-          </button>
+        <div class="session-copy">
+          <div class="session-copy-label"><span>Your SESSION_ID</span><span>Base64</span></div>
+          <textarea class="session-value" id="pairSessionValue" readonly placeholder="Preparing your session ID…"></textarea>
+          <button class="btn btn-copy" id="pairCopyBtn" onclick="copySession('pair')">Copy SESSION_ID</button>
+          <div class="download-row">
+            <button class="btn-download btn-decoded" onclick="downloadSession('pair','encoded')">Download backup file</button>
+          </div>
         </div>
 
         <div class="warning-box">
@@ -740,8 +775,10 @@
     // ── State ──────────────────────────────────────────────────
     let qrSessionKey = null;
     let qrPollTimer = null;
+    let qrEncoded = '';
     let pairSessionKey = null;
     let pairPollTimer = null;
+    let pairEncoded = '';
 
     // ── View routing ───────────────────────────────────────────
     function showView(id) {
@@ -754,7 +791,9 @@
       stopQRPoll();
       stopPairPoll();
       qrSessionKey = null;
+      qrEncoded = '';
       pairSessionKey = null;
+      pairEncoded = '';
       showView('view-landing');
     }
 
@@ -838,7 +877,8 @@
           showQRLoading('Connected! Building session…');
         } else if (data.status === 'done') {
           stopQRPoll();
-          // Store key for download
+          qrEncoded = data.encoded || '';
+          document.getElementById('qrSessionValue').value = qrEncoded;
           showQRCard('qr-step3');
         } else if (data.status === 'expired') {
           stopQRPoll();
@@ -976,6 +1016,8 @@
 
         if (data.done) {
           stopPairPoll();
+          pairEncoded = data.encoded || '';
+          document.getElementById('pairSessionValue').value = pairEncoded;
           showPairCard('pair-step3');
         } else if (data.expired) {
           stopPairPoll();
@@ -983,16 +1025,44 @@
       } catch (_) {}
     }
 
-    // ── Download ───────────────────────────────────────────────
+    // ── Copy and backup download ───────────────────────────────
+    async function copySession(flow) {
+      const value = flow === 'qr' ? qrEncoded : pairEncoded;
+      const button = document.getElementById(flow === 'qr' ? 'qrCopyBtn' : 'pairCopyBtn');
+      if (!value) return;
+      try {
+        await navigator.clipboard.writeText(value);
+      } catch (_) {
+        const textarea = document.getElementById(flow === 'qr' ? 'qrSessionValue' : 'pairSessionValue');
+        textarea.focus();
+        textarea.select();
+        document.execCommand('copy');
+      }
+      button.textContent = 'Copied SESSION_ID';
+      button.classList.add('copied');
+      setTimeout(() => {
+        button.textContent = 'Copy SESSION_ID';
+        button.classList.remove('copied');
+      }, 2200);
+    }
+
     function downloadSession(flow, type) {
-      const key = flow === 'qr' ? qrSessionKey : pairSessionKey;
-      if (!key) return;
+      const encoded = flow === 'qr' ? qrEncoded : pairEncoded;
+      if (!encoded) return;
+      const content =
+        `DARATECH V2 — SESSION ID (Encoded / Base64)\n` +
+        `============================================\n\n` +
+        `Paste this value into your .env file:\n` +
+        `SESSION_ID=${encoded}\n\n` +
+        `⚠ Never share this file with anyone.\n`;
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
       const a = document.createElement('a');
-      a.href = `/download/${key}?type=${type}`;
-      a.download = '';
+      a.href = URL.createObjectURL(blob);
+      a.download = `daratech-v2-session-${flow}.txt`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
     }
 
     // ── Helpers ────────────────────────────────────────────────
