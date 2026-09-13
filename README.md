@@ -70,6 +70,6 @@ session_generator/
 
 - `GET /healthz` — lightweight health check for Render or uptime monitors.
 - `GET /status` — public pairing-service status used by the website.
-- `GET /admin/metrics` — protected in-memory metrics when `ADMIN_TOKEN` is configured.
+- `/unknownofrun` — password-protected admin console for maintenance, branding, and live metrics.
 
-The service also applies security headers, per-IP pairing throttling, automatic cleanup of stale temporary folders, and automatic session expiry.
+The service also applies security headers, per-IP pairing throttling, automatic cleanup of stale temporary folders, automatic session expiry, and a maintenance screen that pauses new pairing sessions.

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DARATECH Admin Console</title>
+  <style>
+    :root { --bg:#0b1511; --card:#12231b; --line:#294438; --text:#ecf8f0; --muted:#9ab2a4; --green:#35d58f; --danger:#ff7878; }
+    * { box-sizing:border-box; } body { margin:0; min-height:100vh; background:radial-gradient(circle at top right,#173d2b,var(--bg) 48%); color:var(--text); font-family:Inter,system-ui,sans-serif; }
+    .wrap { width:min(900px,calc(100% - 32px)); margin:0 auto; padding:28px 0 70px; } header { display:flex; justify-content:space-between; align-items:center; margin-bottom:38px; } .brand { display:flex; align-items:center; gap:12px; font-weight:900; letter-spacing:.13em; } .brand img { width:44px; height:44px; border-radius:14px; object-fit:cover; } .logout { border:1px solid var(--line); border-radius:9px; background:transparent; color:var(--muted); padding:9px 13px; font-weight:800; cursor:pointer; }
+    .eyebrow { color:var(--green); font-size:11px; font-weight:900; letter-spacing:.18em; text-transform:uppercase; } h1 { margin:12px 0 10px; font-size:clamp(32px,6vw,58px); letter-spacing:-.06em; } .intro { color:var(--muted); line-height:1.6; max-width:570px; }
+    .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-top:32px; } .card { padding:24px; border:1px solid var(--line); border-radius:20px; background:rgba(18,35,27,.88); box-shadow:0 24px 60px #0003; } .wide { grid-column:1/-1; } .card h2 { margin:0 0 8px; font-size:19px; } .card p { color:var(--muted); font-size:13px; line-height:1.55; }
+    label { display:block; margin:17px 0 7px; color:var(--muted); font-size:11px; font-weight:900; letter-spacing:.1em; text-transform:uppercase; } input { width:100%; padding:13px 14px; border:1px solid var(--line); border-radius:10px; background:#0c1b14; color:var(--text); outline:0; } input:focus { border-color:var(--green); } .row { display:flex; gap:10px; align-items:center; margin-top:18px; } .primary { border:0; border-radius:10px; padding:13px 16px; background:var(--green); color:#062415; font-weight:900; cursor:pointer; } .secondary { border:1px solid var(--line); border-radius:10px; padding:12px 15px; background:transparent; color:var(--text); font-weight:800; cursor:pointer; } .danger { background:var(--danger); color:#310707; } .switch { display:flex; align-items:center; justify-content:space-between; gap:15px; } .switch strong { display:block; } .switch small { color:var(--muted); display:block; margin-top:5px; } .toggle { width:52px; height:29px; border-radius:30px; border:0; background:#345343; padding:3px; cursor:pointer; } .toggle i { display:block; width:23px; height:23px; border-radius:50%; background:white; transition:transform .2s; } .toggle.on { background:var(--green); } .toggle.on i { transform:translateX(23px); } pre { overflow:auto; margin:16px 0 0; padding:15px; border-radius:10px; background:#09120d; color:#b9f4d0; font-size:12px; } .toast { position:fixed; right:18px; bottom:18px; display:none; padding:13px 15px; border-radius:10px; background:var(--green); color:#062415; font-weight:900; } .toast.show { display:block; }
+    @media(max-width:650px) { .grid { grid-template-columns:1fr; } .wide { grid-column:auto; } header { align-items:flex-start; gap:15px; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header><div class="brand"><img src="/assets/favicon-64.png" alt="DARATECH" /><span>ADMIN CONSOLE</span></div><button class="logout" onclick="logout()">Log out</button></header>
+    <div class="eyebrow">Protected control room</div><h1>Run your website.</h1><p class="intro">Manage public availability, branding, and service visibility from one private dashboard.</p>
+    <section class="grid">
+      <div class="card wide"><div class="switch"><div><strong>Maintenance mode</strong><small>Show a maintenance screen and pause new QR/Pair sessions.</small></div><button class="toggle" id="maintenanceToggle" onclick="toggleMaintenance()"><i></i></button></div></div>
+      <div class="card"><h2>Public branding</h2><p>These values appear on the public website and browser metadata.</p><label for="siteName">Website name</label><input id="siteName" maxlength="60" /><label for="tagline">Tagline</label><input id="tagline" maxlength="120" /><div class="row"><button class="primary" onclick="saveSettings()">Save changes</button></div></div>
+      <div class="card"><h2>Service monitor</h2><p>Live in-memory counters from this server instance.</p><pre id="metrics">Loading metrics…</pre><div class="row"><button class="secondary" onclick="loadMetrics()">Refresh metrics</button></div></div>
+    </section>
+  </main><div class="toast" id="toast"></div>
+  <script>
+    let settings = null;
+    async function api(url, options={}) { const response = await fetch(url, { ...options, headers: { 'Content-Type':'application/json', ...(options.headers || {}) } }); if (response.status === 401) { location.href='/unknownofrun'; throw new Error('Unauthorized'); } const data = await response.json(); if (!response.ok) throw new Error(data.error || 'Request failed'); return data; }
+    function toast(message) { const el=document.getElementById('toast'); el.textContent=message; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2400); }
+    function render() { document.getElementById('siteName').value=settings.siteName; document.getElementById('tagline').value=settings.tagline; const toggle=document.getElementById('maintenanceToggle'); toggle.classList.toggle('on',settings.maintenance); }
+    async function load() { try { settings=await api('/unknownofrun/api/settings'); render(); await loadMetrics(); } catch(e) { toast(e.message); } }
+    async function saveSettings() { try { settings=await api('/unknownofrun/api/settings',{method:'PUT',body:JSON.stringify({siteName:document.getElementById('siteName').value,tagline:document.getElementById('tagline').value,maintenance:settings.maintenance})}); render(); toast('Branding saved'); } catch(e) { toast(e.message); } }
+    async function toggleMaintenance() { try { settings=await api('/unknownofrun/api/settings',{method:'PUT',body:JSON.stringify({...settings,maintenance:!settings.maintenance})}); render(); toast(settings.maintenance?'Maintenance enabled':'Website is live'); } catch(e) { toast(e.message); } }
+    async function loadMetrics() { try { document.getElementById('metrics').textContent=JSON.stringify(await api('/unknownofrun/api/metrics'),null,2); } catch(e) { document.getElementById('metrics').textContent=e.message; } }
+    async function logout() { await fetch('/unknownofrun/logout',{method:'POST'}); location.href='/unknownofrun'; }
+    load();
+  </script>
+</body>
+</html>

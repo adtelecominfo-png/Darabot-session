@@ -45,6 +45,7 @@
       --shadow: 0 24px 70px rgba(28, 69, 52, .12);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--paper); }
     body {
       min-height: 100vh;
       color: var(--ink);
@@ -53,7 +54,7 @@
     }
     button, input, textarea { font: inherit; }
     button { cursor: pointer; }
-    .site-shell { min-height: 100vh; overflow: hidden; position: relative; }
+    .site-shell { min-height: 100vh; overflow: hidden; position: relative; background: var(--paper); }
     .site-shell::before, .site-shell::after {
       content: ""; position: fixed; width: 380px; height: 380px; border-radius: 50%; filter: blur(4px); pointer-events: none; z-index: -1;
     }
@@ -67,6 +68,7 @@
     .brand-mark { width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; overflow: hidden; background: var(--ink); color: var(--lime); font-weight: 900; letter-spacing: -2px; box-shadow: 0 8px 20px rgba(16,37,30,.18); }
     .brand-mark img { width: 100%; height: 100%; object-fit: cover; }
     .brand-name { font-size: 15px; line-height: 1; font-weight: 900; letter-spacing: .14em; }
+    .brand-name strong { display: block; font: inherit; }
     .brand-name span { display: block; margin-top: 5px; color: var(--green); font-size: 10px; letter-spacing: .22em; }
     .top-actions { display: flex; align-items: center; gap: 9px; }
     .utility-btn, .language-select { border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,.72); color: var(--ink); font-size: 12px; font-weight: 800; padding: 9px 11px; }
@@ -197,7 +199,7 @@
     <header class="topbar">
       <a class="brand" href="#" onclick="goLanding(); return false;">
         <div class="brand-mark"><img src="/assets/favicon-64.png" alt="" /></div>
-        <div class="brand-name">DARATECH<span>SESSION STUDIO</span></div>
+        <div class="brand-name"><strong id="publicSiteName">DARATECH V2</strong><span>SESSION STUDIO</span></div>
       </a>
       <div class="top-actions"><button class="utility-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle dark mode">☾</button><select class="language-select" id="languageSelect" onchange="setLanguage(this.value)" aria-label="Language"><option value="en">EN</option><option value="fr">FR</option><option value="ha">HA</option></select><button class="utility-btn" onclick="checkStatus()">Status</button><div class="status-chip"><i class="status-dot"></i> Secure session generator</div></div>
     </header>
@@ -205,7 +207,7 @@
     <main class="page">
       <section class="hero">
         <div class="eyebrow">WhatsApp connection made simple</div>
-        <h1>Your session.<br /><em>Your control.</em></h1>
+        <h1 id="heroTitle">Your session.<br /><em>Your control.</em></h1>
         <p class="hero-copy">Generate a secure DARATECH V2 session ID in seconds. Choose the connection method that works best for you.</p>
       </section>
 
@@ -287,6 +289,7 @@
     async function installApp() { if (!deferredInstallPrompt) return; deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt = null; document.getElementById('installBanner').classList.remove('show'); }
     if (localStorage.getItem('daratech-theme') === 'dark') toggleTheme();
     setLanguage(localStorage.getItem('daratech-language') || 'en');
+    fetch('/site-config').then(r => r.json()).then(config => { document.title = config.siteName + ' — Session Generator'; document.getElementById('publicSiteName').textContent = config.siteName; document.querySelector('.hero-copy').textContent = config.tagline + ' Generate a secure session ID in seconds.'; }).catch(() => {});
   </script>
 </body>
 </html>
