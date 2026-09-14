@@ -20,8 +20,10 @@ A web app that generates your WhatsApp `SESSION_ID` for DARATECH V2 using QR cod
 3. Set:
    - **Build Command:** `npm install`
    - **Start Command:** `npm start`
-4. No environment variables needed — `PORT` is set by Render automatically
-5. Done — your site is live
+4. Create or attach a Render PostgreSQL database to the Web Service.
+5. Add `DATABASE_URL` using the database's **Internal Database URL**. Render exposes `PORT` automatically.
+6. Optional locally: set `DATABASE_SSL=disable` for a non-SSL local PostgreSQL server.
+7. Deploy. The app creates the `daratech_site_settings` table automatically and keeps admin branding/maintenance settings across redeploys.
 
 ---
 
@@ -38,7 +40,7 @@ npm start
 
 ## Deploy Anywhere Else
 
-The app only needs **Node.js 18+** and reads `PORT` from the environment (defaults to `3000`).
+The app needs **Node.js 18+**, reads `PORT` from the environment (defaults to `3000`), and uses `DATABASE_URL` for persistent admin settings.
 
 Works on: Render · Railway · Heroku · Koyeb · VPS
 

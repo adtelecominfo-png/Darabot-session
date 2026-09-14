@@ -64,7 +64,10 @@ app.post(`${ADMIN_ROUTE}/login`, (req, res) => {
 app.post(`${ADMIN_ROUTE}/logout`, (req, res) => { const token = adminToken(req); if (token) adminSessions.delete(token); res.setHeader('Set-Cookie', `daratech_admin=; HttpOnly; SameSite=Strict; Path=${ADMIN_ROUTE}; Max-Age=0`); res.json({ ok: true }); });
 app.get(`${ADMIN_ROUTE}/dashboard`, (req, res) => { if (!isAdmin(req)) return res.redirect(ADMIN_ROUTE); res.sendFile(path.join(__dirname, 'public', 'admin.html')); });
 app.get(`${ADMIN_ROUTE}/api/settings`, requireAdmin, (req, res) => res.json(siteConfig.read()));
-app.put(`${ADMIN_ROUTE}/api/settings`, requireAdmin, (req, res) => res.json(siteConfig.write({ ...siteConfig.read(), ...req.body })));
+app.put(`${ADMIN_ROUTE}/api/settings`, requireAdmin, async (req, res) => {
+  try { res.json(await siteConfig.write({ ...siteConfig.read(), ...req.body })); }
+  catch (error) { console.error('Settings update error:', error.message); res.status(500).json({ error: 'Could not save settings.' }); }
+});
 app.get(`${ADMIN_ROUTE}/api/metrics`, requireAdmin, (req, res) => res.json(metrics.snapshot()));
 
 app.use('/code', (req, res, next) => { const config = siteConfig.read(); if (config.maintenance) return res.status(503).json({ error: 'Website is under maintenance. Please try again later.' }); next(); }, throttlePairing, pairRouter);
@@ -93,5 +96,7 @@ const cleanupTemp = () => { const cutoff = Date.now() - 20 * 60 * 1000; try { fo
 setInterval(cleanupTemp, 10 * 60 * 1000).unref();
 setInterval(() => { const now = Date.now(); for (const [token, expires] of adminSessions) if (expires < now) adminSessions.delete(token); }, 15 * 60 * 1000).unref();
 cleanupTemp();
-app.listen(PORT, () => console.log(`✅ ${siteConfig.read().siteName} running on port ${PORT}`));
+siteConfig.init()
+  .then(() => app.listen(PORT, () => console.log(`✅ ${siteConfig.read().siteName} running on port ${PORT}`)))
+  .catch(error => { console.error('❌ Settings database initialization failed:', error); process.exit(1); });
 module.exports = app;

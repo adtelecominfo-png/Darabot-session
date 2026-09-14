@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node index.js",
-    "check": "node --check index.js && node --check qr.js && node --check pair.js && node --check metrics.js"
+    "check": "node --check index.js && node --check qr.js && node --check pair.js && node --check metrics.js && node --check site-config.js"
   },
   "author": "Daratech",
   "license": "ISC",
@@ -17,6 +17,7 @@
     "pino": "^8.21.0",
     "dotenv": "^16.4.5",
     "cors": "^2.8.5",
-    "qrcode": "^1.5.4"
+    "qrcode": "^1.5.4",
+    "pg": "^8.13.1"
   }
 }
