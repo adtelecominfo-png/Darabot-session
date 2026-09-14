@@ -92,7 +92,10 @@ router.get('/', async (req, res) => {
             text: `🤖 *DARATECH BOT V2 — SESSION_ID*\n\n${encoded}\n\nPaste as SESSION_ID= in your bot's .env file.\n\n⚠️ Never share it.`
           });
           await sock.sendMessage(sock.user.id, {
-            text: `📄 *creds.json*\n\n${decoded}\n\nSave this message as creds.json if your bot needs the raw credentials file.`
+            document: Buffer.from(decoded, 'utf8'),
+            mimetype: 'application/json',
+            fileName: 'creds.json',
+            caption: '📄 creds.json — keep this file private.'
           });
 
           console.log(`✅ Pair session created for ${sock.user.id}`);
