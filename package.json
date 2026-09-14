@@ -1,7 +1,7 @@
 {
   "name": "daratech-session-generator",
   "version": "1.0.0",
-  "description": "WhatsApp Session ID Generator for DARATECH V2",
+  "description": "WhatsApp Session ID Generator for DARATECH BOT V2",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {

@@ -1,6 +1,6 @@
-# DARATECH V2 — Session ID Generator
+# DARATECH BOT V2 — Session ID Generator
 
-A web app that generates your WhatsApp `SESSION_ID` for DARATECH V2 using QR code or phone-number pairing.
+A web app that generates your WhatsApp `SESSION_ID` for DARATECH BOT V2 using QR code or phone-number pairing.
 
 ---
 
@@ -64,7 +64,7 @@ session_generator/
 
 ## Notes
 
-- `SESSION_ID` generated here is plain base64 — compatible with DARATECH V2's `.env` format
+- `SESSION_ID` generated here is plain base64 — compatible with DARATECH BOT V2's `.env` format
 - Each pairing creates a temp folder under `temp/` that is deleted automatically after the session is created
 - The app does **not** store or log any session data
 

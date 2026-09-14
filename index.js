@@ -78,7 +78,7 @@ app.get('/download/:key', (req, res) => {
   if (!sess) return res.status(404).json({ error: 'Session not found or expired.' });
   let content, filename;
   if (type === 'decoded') { try { content = JSON.stringify(JSON.parse(sess.decoded), null, 2); } catch (_) { content = sess.decoded; } filename = `daratech-session-decoded-${key}.txt`; }
-  else { content = `DARATECH V2 — SESSION ID (Encoded / Base64)\n============================================\nGenerated: ${new Date().toUTCString()}\n\nPaste this value into your .env file:\nSESSION_ID=${sess.encoded}\n\n⚠ Never share this file with anyone.\n⚠ It gives full access to your WhatsApp account.\n`; filename = `daratech-session-encoded-${key}.txt`; }
+  else { content = `DARATECH BOT V2 — SESSION ID (Encoded / Base64)\n============================================\nGenerated: ${new Date().toUTCString()}\n\nPaste this value into your .env file:\nSESSION_ID=${sess.encoded}\n\n⚠ Never share this file with anyone.\n⚠ It gives full access to your WhatsApp account.\n`; filename = `daratech-session-encoded-${key}.txt`; }
   res.setHeader('Content-Type', 'text/plain; charset=utf-8'); res.setHeader('Content-Disposition', `attachment; filename="${filename}"`); res.send(content);
 });
 

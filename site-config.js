@@ -5,7 +5,7 @@ const { Pool } = require('pg');
 const dataDir = path.join(__dirname, 'data');
 const configPath = path.join(dataDir, 'site-config.json');
 const defaults = {
-  siteName: 'DARATECH V2',
+  siteName: 'DARATECH BOT V2',
   tagline: 'Your session. Your control.',
   maintenance: false
 };
@@ -14,8 +14,10 @@ let pool = null;
 let current = { ...defaults };
 
 function sanitize(next) {
+  const requestedName = String(next.siteName || defaults.siteName).trim();
+  const siteName = requestedName === 'DARATECH V2' ? defaults.siteName : requestedName;
   return {
-    siteName: String(next.siteName || defaults.siteName).trim().slice(0, 60) || defaults.siteName,
+    siteName: siteName.slice(0, 60) || defaults.siteName,
     tagline: String(next.tagline || defaults.tagline).trim().slice(0, 120) || defaults.tagline,
     maintenance: Boolean(next.maintenance)
   };

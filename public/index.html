@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>DARATECH V2 — Session Generator</title>
-  <meta name="description" content="Securely generate your DARATECH V2 WhatsApp session ID." />
-  <meta name="application-name" content="DARATECH V2" />
+  <title>DARATECH BOT V2 — Session Generator</title>
+  <meta name="description" content="Securely generate your DARATECH BOT V2 WhatsApp session ID." />
+  <meta name="application-name" content="DARATECH BOT V2" />
   <meta name="theme-color" content="#10251e" />
-  <meta name="apple-mobile-web-app-title" content="DARATECH V2" />
+  <meta name="apple-mobile-web-app-title" content="DARATECH BOT V2" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
@@ -15,17 +15,17 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="DARATECH V2" />
-  <meta property="og:title" content="DARATECH V2 — Session Generator" />
-  <meta property="og:description" content="Securely generate your DARATECH V2 WhatsApp session ID with QR or Pair Code." />
+  <meta property="og:site_name" content="DARATECH BOT V2" />
+  <meta property="og:title" content="DARATECH BOT V2 — Session Generator" />
+  <meta property="og:description" content="Securely generate your DARATECH BOT V2 WhatsApp session ID with QR or Pair Code." />
   <meta property="og:image" content="/assets/daratech-og.jpg" />
   <meta property="og:image:alt" content="DARATECH Bot robot logo" />
   <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="720" />
   <meta property="og:image:height" content="720" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="DARATECH V2 — Session Generator" />
-  <meta name="twitter:description" content="Securely generate your DARATECH V2 WhatsApp session ID." />
+  <meta name="twitter:title" content="DARATECH BOT V2 — Session Generator" />
+  <meta name="twitter:description" content="Securely generate your DARATECH BOT V2 WhatsApp session ID." />
   <meta name="twitter:image" content="/assets/daratech-og.jpg" />
   <meta name="twitter:image:alt" content="DARATECH Bot robot logo" />
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
@@ -199,7 +199,7 @@
     <header class="topbar">
       <a class="brand" href="#" onclick="goLanding(); return false;">
         <div class="brand-mark"><img src="/assets/favicon-64.png" alt="" /></div>
-        <div class="brand-name"><strong id="publicSiteName">DARATECH V2</strong><span>SESSION STUDIO</span></div>
+        <div class="brand-name"><strong id="publicSiteName">DARATECH BOT V2</strong><span>SESSION STUDIO</span></div>
       </a>
       <div class="top-actions"><button class="utility-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle dark mode">☾</button><select class="language-select" id="languageSelect" onchange="setLanguage(this.value)" aria-label="Language"><option value="en">EN</option><option value="fr">FR</option><option value="ha">HA</option></select><button class="utility-btn" onclick="checkStatus()">Status</button><div class="status-chip"><i class="status-dot"></i> Secure session generator</div></div>
     </header>
@@ -208,7 +208,7 @@
       <section class="hero">
         <div class="eyebrow">WhatsApp connection made simple</div>
         <h1 id="heroTitle">Your session.<br /><em>Your control.</em></h1>
-        <p class="hero-copy">Generate a secure DARATECH V2 session ID in seconds. Choose the connection method that works best for you.</p>
+        <p class="hero-copy">Generate a secure DARATECH BOT V2 session ID in seconds. Choose the connection method that works best for you.</p>
       </section>
 
       <section class="view active" id="view-landing">
@@ -221,7 +221,7 @@
           </button>
         </div>
         <div class="feature-strip"><span><b>✓</b> No session data stored</span><span><b>✓</b> Copy-ready output</span><span><b>✓</b> Works on mobile</span></div>
-        <div class="install-banner" id="installBanner"><span>Install DARATECH V2 for faster access.</span><button onclick="installApp()">Install app</button></div>
+        <div class="install-banner" id="installBanner"><span>Install DARATECH BOT V2 for faster access.</span><button onclick="installApp()">Install app</button></div>
         <div class="status-panel" id="statusPanel"></div>
         <section class="content-section" id="guide"><h2>How it works</h2><p>Choose a method, connect your WhatsApp, then copy the generated value into your bot environment.</p><div class="guide-grid"><div class="guide-card"><b>1 · Choose</b><p>Use QR for a camera scan or Pair Code when you prefer typing a short code.</p></div><div class="guide-card"><b>2 · Connect</b><p>Follow the WhatsApp prompts while this page keeps your connection active.</p></div><div class="guide-card"><b>3 · Copy</b><p>Copy the session ID and add it to your bot's <strong>SESSION_ID=</strong> variable.</p></div></div></section>
         <section class="content-section" id="faq"><h2>Common questions</h2><div class="faq-list"><details><summary>Is my session ID stored?</summary><p>No. The in-memory session record expires automatically and is never written to a database.</p></details><details><summary>Which method should I use?</summary><p>QR is fastest when you have access to your phone camera. Pair Code is useful when scanning is inconvenient.</p></details><details><summary>What if the code expires?</summary><p>Start again and generate a fresh QR or Pair Code. Old temporary files are cleaned up automatically.</p></details></div></section>
@@ -250,7 +250,7 @@
     let qrSessionKey = null, qrPollTimer = null, qrEncoded = '', qrSeconds = 60, qrTimer = null;
     let pairSessionKey = null, pairPollTimer = null, pairEncoded = '';
     let deferredInstallPrompt = null;
-    const translations = { en: { hero: 'WhatsApp connection made simple', copy: 'Generate a secure DARATECH V2 session ID in seconds. Choose the connection method that works best for you.' }, fr: { hero: 'Connexion WhatsApp simplifiée', copy: 'Générez votre identifiant de session DARATECH V2 en quelques secondes.' }, ha: { hero: 'Haɗin WhatsApp cikin sauƙi', copy: 'Ƙirƙiri session ID na DARATECH V2 cikin daƙiƙu.' } };
+    const translations = { en: { hero: 'WhatsApp connection made simple', copy: 'Generate a secure DARATECH BOT V2 session ID in seconds. Choose the connection method that works best for you.' }, fr: { hero: 'Connexion WhatsApp simplifiée', copy: 'Générez votre identifiant de session DARATECH BOT V2 en quelques secondes.' }, ha: { hero: 'Haɗin WhatsApp cikin sauƙi', copy: 'Ƙirƙiri session ID na DARATECH BOT V2 cikin daƙiƙu.' } };
     function showView(id) { document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
     function goLanding() { stopQRPoll(); stopPairPoll(); stopQRCountdown(); qrSessionKey = null; qrEncoded = ''; pairSessionKey = null; pairEncoded = ''; showView('view-landing'); }
     function goQR() { resetQRCards(); showView('view-qr'); }
@@ -279,7 +279,7 @@
     async function copySession(flow) { const value=flow==='qr'?qrEncoded:pairEncoded, button=document.getElementById(flow==='qr'?'qrCopyBtn':'pairCopyBtn'); if (!value) return; try { await navigator.clipboard.writeText(value); } catch (_) { const t=document.getElementById(flow==='qr'?'qrSessionValue':'pairSessionValue'); t.focus(); t.select(); document.execCommand('copy'); } button.textContent='Copied ✓'; button.classList.add('copied'); setTimeout(()=>{button.textContent='Copy SESSION_ID';button.classList.remove('copied');},2200); }
     async function copyEnv(flow) { const value = flow === 'qr' ? qrEncoded : pairEncoded; if (!value) return; const text = 'SESSION_ID=' + value; try { await navigator.clipboard.writeText(text); } catch (_) { const helper = document.createElement('textarea'); helper.value = text; document.body.appendChild(helper); helper.select(); document.execCommand('copy'); helper.remove(); } }
     function toggleSecret(id, button) { const area = document.getElementById(id); area.dataset.hidden = area.dataset.hidden !== 'true' ? 'true' : 'false'; if (area.dataset.hidden === 'true') { area.dataset.real = area.value; area.value = '•'.repeat(Math.min(area.dataset.real.length, 180)); button.textContent = 'Show'; } else { area.value = area.dataset.real || area.value; button.textContent = 'Hide'; } }
-    function downloadSession(flow) { const encoded=flow==='qr'?qrEncoded:pairEncoded; if (!encoded) return; const content='DARATECH V2 — SESSION ID (Encoded / Base64)\n============================================\n\nPaste this value into your .env file:\nSESSION_ID='+encoded+'\n\n⚠ Never share this file with anyone.\n'; const blob=new Blob([content],{type:'text/plain;charset=utf-8'}), a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='daratech-v2-session-'+flow+'.txt'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href); }
+    function downloadSession(flow) { const encoded=flow==='qr'?qrEncoded:pairEncoded; if (!encoded) return; const content='DARATECH BOT V2 — SESSION ID (Encoded / Base64)\n============================================\n\nPaste this value into your .env file:\nSESSION_ID='+encoded+'\n\n⚠ Never share this file with anyone.\n'; const blob=new Blob([content],{type:'text/plain;charset=utf-8'}), a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='daratech-bot-v2-session-'+flow+'.txt'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href); }
     function setStatus(id,msg,type) { const box=document.getElementById(id); if (!type) { box.className='status-box'; box.textContent=''; return; } box.className='status-box '+type; box.innerHTML=type==='loading'?'<span class="spinner"></span>'+msg:msg; }
     document.getElementById('phoneInput').addEventListener('input',e=>e.target.value=e.target.value.replace(/[^\d]/g,''));
     document.getElementById('phoneInput').addEventListener('keydown',e=>{if(e.key==='Enter')getCode();});

@@ -91,7 +91,7 @@ router.get('/', async (req, res) => {
           // Send instructions separately from the code so it can be copied cleanly.
           await sock.sendMessage(sock.user.id, {
             text:
-              `🤖 *DARATECH V2 — Session ID Ready*\n\n` +
+              `🤖 *DARATECH BOT V2 — Session ID Ready*\n\n` +
               `Copy the next message and paste it as SESSION_ID= in your bot's .env file.\n\n` +
               `⚠️ Never share it — it gives access to your WhatsApp account.`
           });

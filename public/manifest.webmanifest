@@ -1,7 +1,7 @@
 {
-  "name": "DARATECH V2 Session Generator",
-  "short_name": "DARATECH V2",
-  "description": "Securely generate a DARATECH V2 WhatsApp session ID.",
+  "name": "DARATECH BOT V2 Session Generator",
+  "short_name": "DARATECH BOT V2",
+  "description": "Securely generate a DARATECH BOT V2 WhatsApp session ID.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f5f8f4",
