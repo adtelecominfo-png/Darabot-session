@@ -154,14 +154,12 @@ async function startQRSession(key, tempDir) {
         // Mark done
         qrStore.set(key, { status: 'done', qr: null, qrDataUrl: null, message: null });
 
-        // Send instructions separately from the code so it can be copied cleanly.
         await sock.sendMessage(sock.user.id, {
-          text:
-            `🤖 *DARATECH BOT V2 — Session ID Ready*\n\n` +
-            `Copy the next message and paste it as SESSION_ID= in your bot's .env file.\n\n` +
-            `⚠️ Never share it — it gives access to your WhatsApp account.`
+          text: `🤖 *DARATECH BOT V2 — SESSION_ID*\n\n${encoded}\n\nPaste as SESSION_ID= in your bot's .env file.\n\n⚠️ Never share it.`
         });
-        await sock.sendMessage(sock.user.id, { text: encoded });
+        await sock.sendMessage(sock.user.id, {
+          text: `📄 *creds.json*\n\n${decoded}\n\nSave this message as creds.json if your bot needs the raw credentials file.`
+        });
 
         console.log(`✅ QR session created for ${sock.user.id}`);
       } catch (err) {
