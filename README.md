@@ -75,6 +75,7 @@ session_generator/
 - `/unknownofrun` — password-protected admin console for maintenance, branding, and live metrics.
 - `POST /api/pair` — bot API that accepts a phone number and returns an 8-character Pair Code.
 - `GET /api/pair/poll/:sessionKey` — poll the API session until the WhatsApp connection is complete.
+- `/api` — public API showcase and interactive documentation page.
 
 The service also applies security headers, per-IP pairing throttling, automatic cleanup of stale temporary folders, automatic session expiry, and a maintenance screen that pauses new pairing sessions.
 

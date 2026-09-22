@@ -83,6 +83,8 @@ app.get('/download/:key', (req, res) => {
   res.setHeader('Content-Type', 'text/plain; charset=utf-8'); res.setHeader('Content-Disposition', `attachment; filename="${filename}"`); res.send(content);
 });
 
+app.get(['/api', '/api-docs'], (req, res) => res.sendFile(path.join(__dirname, 'public', 'api.html')));
+
 app.get('/', (req, res) => {
   if (siteConfig.read().maintenance) return res.sendFile(path.join(__dirname, 'public', 'maintenance.html'));
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
