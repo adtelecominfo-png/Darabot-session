@@ -73,5 +73,32 @@ session_generator/
 - `GET /healthz` — lightweight health check for Render or uptime monitors.
 - `GET /status` — public pairing-service status used by the website.
 - `/unknownofrun` — password-protected admin console for maintenance, branding, and live metrics.
+- `POST /api/pair` — bot API that accepts a phone number and returns an 8-character Pair Code.
+- `GET /api/pair/poll/:sessionKey` — poll the API session until the WhatsApp connection is complete.
 
 The service also applies security headers, per-IP pairing throttling, automatic cleanup of stale temporary folders, automatic session expiry, and a maintenance screen that pauses new pairing sessions.
+
+## Bot Pair Code API
+
+Request a code with JSON:
+
+```bash
+curl -X POST https://your-render-service.onrender.com/api/pair \
+  -H "Content-Type: application/json" \
+  -d '{"phoneNumber":"2348152077346"}'
+```
+
+The response includes `code`/`pairingCode`, `sessionKey`, `pollUrl`, and `expiresIn`:
+
+```json
+{
+  "ok": true,
+  "code": "AB12CD34",
+  "pairingCode": "AB12CD34",
+  "sessionKey": "examplekey",
+  "pollUrl": "/api/pair/poll/examplekey",
+  "expiresIn": 600
+}
+```
+
+Enter the returned eight-character code in WhatsApp under **Linked Devices → Link with phone number instead**, then poll the returned URL. When complete, the poll response contains `encoded` (the `SESSION_ID`) and `decoded` (the raw `creds.json` content). The API is protected by the same per-IP rate limit as the website; keep the endpoint private or place an API gateway/authentication layer in front of it for production bot use.

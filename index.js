@@ -71,6 +71,7 @@ app.put(`${ADMIN_ROUTE}/api/settings`, requireAdmin, async (req, res) => {
 app.get(`${ADMIN_ROUTE}/api/metrics`, requireAdmin, (req, res) => res.json(metrics.snapshot()));
 
 app.use('/code', (req, res, next) => { const config = siteConfig.read(); if (config.maintenance) return res.status(503).json({ error: 'Website is under maintenance. Please try again later.' }); next(); }, throttlePairing, pairRouter);
+app.use('/api/pair', (req, res, next) => { const config = siteConfig.read(); if (config.maintenance) return res.status(503).json({ error: 'Website is under maintenance. Please try again later.' }); next(); }, throttlePairing, pairRouter);
 app.use('/qr', (req, res, next) => { const config = siteConfig.read(); if (config.maintenance) return res.status(503).json({ error: 'Website is under maintenance. Please try again later.' }); next(); }, throttlePairing, qrRouter);
 
 app.get('/download/:key', (req, res) => {

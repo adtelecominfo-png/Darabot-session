@@ -29,13 +29,13 @@ function removeFolder(folderPath) {
   }
 }
 
-// GET /code?number=... — generate pairing code
-router.get('/', async (req, res) => {
+// GET /code?number=... or POST /api/pair { phoneNumber } — generate pairing code
+async function generatePairingCode(req, res) {
   metrics.increment('pairStarts');
   const id = makeid();
   const sessionKey = makeid(10);
   const tempDir = path.join(__dirname, 'temp', id);
-  const phoneNumber = (req.query.number || '').replace(/\D/g, '');
+  const phoneNumber = (req.query.number || req.body?.phoneNumber || req.body?.number || '').replace(/\D/g, '');
 
   if (!phoneNumber || phoneNumber.length < 7) {
     return res.status(400).json({ error: 'Please provide a valid phone number with country code.' });
@@ -131,7 +131,8 @@ router.get('/', async (req, res) => {
         const pairingCode = await sock.requestPairingCode(phoneNumber);
         if (!pairingCodeSent && !res.headersSent) {
           pairingCodeSent = true;
-          return res.json({ code: pairingCode, sessionKey });
+          const code = String(pairingCode).replace(/\s/g, '');
+          return res.json({ ok: true, code, pairingCode: code, sessionKey, pollUrl: `/api/pair/poll/${sessionKey}`, expiresIn: 600 });
         }
       } catch (err) {
         console.error('Pairing code error:', err.message);
@@ -157,9 +158,12 @@ router.get('/', async (req, res) => {
       res.status(500).json({ error: 'Service unavailable. Please try again later.' });
     }
   }
-});
+}
 
-// GET /code/poll/:key — check if pair session is done
+router.get('/', generatePairingCode);
+router.post('/', generatePairingCode);
+
+// GET /code/poll/:key or /api/pair/poll/:key — check if pair session is done
 router.get('/poll/:key', (req, res) => {
   const { key } = req.params;
   const status = pairStatus.get(key);
